@@ -1,6 +1,8 @@
 package com.nero.carupapi.controller;
 
 import com.nero.carupapi.model.Cliente;
+import com.nero.carupapi.model.TipoCliente;
+import com.nero.carupapi.repository.TipoClienteRepository;
 import com.nero.carupapi.service.ClienteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +14,11 @@ import java.util.Optional;
 @RequestMapping("/api/clientes")
 public class ClienteController {
     private final ClienteService cliService;
+    private final TipoClienteRepository tipoCliRepo;
 
-    public ClienteController(ClienteService cliService) {
+    public ClienteController(ClienteService cliService, TipoClienteRepository tipoCliRepo) {
         this.cliService = cliService;
+        this.tipoCliRepo = tipoCliRepo;
     }
 
     @GetMapping
@@ -54,5 +58,10 @@ public class ClienteController {
         }
         cliService.eliminarCliente(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/tipoClientes")
+    public List<TipoCliente> getTipoClientes() {
+        return tipoCliRepo.findAll();
     }
 }
