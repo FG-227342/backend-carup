@@ -2,6 +2,9 @@ package com.nero.carupapi.service;
 
 import com.nero.carupapi.model.Cliente;
 import com.nero.carupapi.repository.ClienteRepository;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,5 +45,10 @@ public class ClienteService {
 
     public void eliminarCliente(Long id) {
         cRepo.deleteById(id);
+    }
+
+    public List<Cliente> buscarPorTexto(String texto, int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return cRepo.buscarPorTexto(texto, pageable);
     }
 }

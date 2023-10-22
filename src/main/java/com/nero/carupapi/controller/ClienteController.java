@@ -64,4 +64,9 @@ public class ClienteController {
     public List<TipoCliente> getTipoClientes() {
         return tipoCliRepo.findAll();
     }
+
+    @GetMapping("/porNombre/{nombre}")
+    public List<Cliente> getCliPorNombre(@PathVariable String nombre) {
+        return cliService.buscarPorTexto(nombre,20);
+    }
 }
