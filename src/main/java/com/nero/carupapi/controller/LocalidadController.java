@@ -18,14 +18,14 @@ import java.util.List;
 @CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/api/localidades")
-public class LocalidadesController {
+public class LocalidadController {
 
     private final PaisRepository paisRepo;
     private final CiudadRepository ciudadRepo;
     private final LocalidadRepository localidadRepo;
     private final ZonaRepository zonaRepo;
 
-    public LocalidadesController(PaisRepository paisRepository, CiudadRepository ciudadRepo, LocalidadRepository localidadRepo, ZonaRepository zonaRepo) {
+    public LocalidadController(PaisRepository paisRepository, CiudadRepository ciudadRepo, LocalidadRepository localidadRepo, ZonaRepository zonaRepo) {
         this.paisRepo = paisRepository;
         this.ciudadRepo = ciudadRepo;
         this.localidadRepo = localidadRepo;

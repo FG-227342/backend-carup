@@ -2,7 +2,6 @@ package com.nero.carupapi.service;
 
 import com.nero.carupapi.model.Cliente;
 import com.nero.carupapi.repository.ClienteRepository;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
