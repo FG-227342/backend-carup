@@ -1,13 +1,13 @@
 package com.nero.carupapi.controller;
 
 import com.nero.carupapi.model.Chofer;
+import com.nero.carupapi.model.Cliente;
 import com.nero.carupapi.repository.ChoferRepository;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
@@ -22,5 +22,15 @@ public class ChoferController {
     @GetMapping
     public List<Chofer> getChoferes() {
         return chofRepo.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Chofer getChofer(@PathVariable Integer id) {
+        return chofRepo.findById(id).orElse(null);
+    }
+
+    @PostMapping
+    public Chofer crearChofer(@RequestBody Chofer chof) {
+        return chofRepo.save(chof);
     }
 }

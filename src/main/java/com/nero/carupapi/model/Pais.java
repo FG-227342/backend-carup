@@ -12,7 +12,7 @@ public class Pais {
     private String nombre;
     private Short idAgo;
 
-    public Object getIdPais() {
+    public Short getIdPais() {
         return idPais;
     }
 
