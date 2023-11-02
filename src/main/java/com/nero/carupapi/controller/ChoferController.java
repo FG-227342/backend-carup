@@ -1,13 +1,11 @@
 package com.nero.carupapi.controller;
 
 import com.nero.carupapi.model.Chofer;
-import com.nero.carupapi.model.Cliente;
 import com.nero.carupapi.repository.ChoferRepository;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
@@ -30,7 +28,25 @@ public class ChoferController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Chofer crearChofer(@RequestBody Chofer chof) {
         return chofRepo.save(chof);
+    }
+
+    @PutMapping("/{id}")
+    public Chofer actualizarChofer(@PathVariable Integer id, @RequestBody Chofer nuevoChofer) {
+        Chofer choferActual = chofRepo.findById(id).orElse(null);
+        if (choferActual != null) {
+            choferActual.setNombre(nuevoChofer.getNombre());
+            choferActual.setCelular(nuevoChofer.getCelular());
+            return chofRepo.save(choferActual);
+        } else {
+            return null;
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public void eliminarChofer(@PathVariable Integer id) {
+        chofRepo.deleteById(id);
     }
 }

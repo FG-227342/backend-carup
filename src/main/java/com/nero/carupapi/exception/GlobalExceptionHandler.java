@@ -36,8 +36,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<String> handleDatabaseException() {
-        String mensaje = "Error de BD: Error de clave foránea ";
+    public ResponseEntity<String> handleDatabaseException(DataIntegrityViolationException ex) {
+        String mensaje = "Error de BD:" + ex.getRootCause();
         return new ResponseEntity<>(mensaje, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

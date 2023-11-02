@@ -1,7 +1,7 @@
 package com.nero.carupapi.controller;
 
-import com.nero.carupapi.model.Movil;
-import com.nero.carupapi.repository.MovilRepository;
+import com.nero.carupapi.model.Rol;
+import com.nero.carupapi.repository.RolRepository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,18 +11,17 @@ import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping("/api/moviles")
-public class MovilesController {
+@RequestMapping("/api/roles")
+public class RolController {
 
-    private final MovilRepository movRepo;
+    private final RolRepository rolRepo;
 
-    public MovilesController(MovilRepository movRepo) {
-        this.movRepo = movRepo;
+    public RolController(RolRepository rolRepo) {
+        this.rolRepo = rolRepo;
     }
-
-
     @GetMapping
-    public List<Movil> getMoviles() {
-        return movRepo.findAll();
+    public List<Rol> getRoles() {
+        return rolRepo.findAll();
     }
+
 }

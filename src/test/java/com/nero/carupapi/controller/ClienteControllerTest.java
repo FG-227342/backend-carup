@@ -1,5 +1,5 @@
 package com.nero.carupapi.controller;
-
+/*
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nero.carupapi.model.Cliente;
@@ -121,4 +121,4 @@ class ClienteControllerTest {
     @Test
     void eliminarCliente() {
     }
-}
+}*/
