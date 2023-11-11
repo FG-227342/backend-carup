@@ -33,6 +33,7 @@ public class Cliente {
     private String notas;
 
     public Cliente() {
+        this.alta = true;
     }
 
     public Cliente(String nombre, String documento, String direccion, String telefono, String celular, Integer idTipoCliente, Integer idAfiliacion, Integer idConvenio, String notas) {
