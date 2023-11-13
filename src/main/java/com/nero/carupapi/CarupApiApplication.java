@@ -6,9 +6,6 @@ import com.nero.carupapi.service.ClienteService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
-import java.time.LocalDate;
 
 @SpringBootApplication
 public class CarupApiApplication {

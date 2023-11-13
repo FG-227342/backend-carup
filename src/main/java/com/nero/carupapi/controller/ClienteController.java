@@ -69,4 +69,14 @@ public class ClienteController {
     public List<Cliente> getCliPorNombre(@PathVariable String nombre) {
         return cliService.buscarPorTexto(nombre,20);
     }
+
+    @GetMapping("/buscarDirecto/{documento}")
+    public ResponseEntity<Cliente> buscarDirecto(@PathVariable String documento) {
+        Cliente res = cliService.buscarDirecto(documento);
+        if (res != null) {
+            return ResponseEntity.ok(res);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

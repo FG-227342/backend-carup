@@ -46,8 +46,14 @@ public class ClienteService {
         cRepo.deleteById(id);
     }
 
+    // busqueda por nombre
     public List<Cliente> buscarPorTexto(String texto, int limit) {
         Pageable pageable = PageRequest.of(0, limit);
         return cRepo.buscarPorTexto(texto, pageable);
+    }
+
+    // buscar directos por documento, tipoCliente 1 es Directo
+    public Cliente buscarDirecto(String documento) {
+        return cRepo.findByDocumentoAndIdTipoCliente(documento,1);
     }
 }
