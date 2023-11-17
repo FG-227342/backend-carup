@@ -18,8 +18,10 @@ public class ServicioWebDTO {
     private String zona;
     private String nombreCliente;
     private Long idVehiculo;
+    private String matricula;
 
     private String marca;
+
     private String modelo;
     private String color;
     private Integer idMovil;
@@ -262,4 +264,46 @@ public class ServicioWebDTO {
         this.llegadaLugar = llegadaLugar;
     }
 
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
+    }
+
+    @Override
+    public String toString() {
+        return "ServicioWebDTO{" +
+                "idSrv=" + idSrv +
+                ", idTarea=" + idTarea +
+                ", fecha=" + fecha +
+                ", hora=" + hora +
+                ", usuario='" + usuario + '\'' +
+                ", paisOrigen='" + paisOrigen + '\'' +
+                ", ciudadOrigen='" + ciudadOrigen + '\'' +
+                ", locOrigen='" + locOrigen + '\'' +
+                ", zona='" + zona + '\'' +
+                ", nombreCliente='" + nombreCliente + '\'' +
+                ", idVehiculo=" + idVehiculo +
+                ", matricula='" + matricula + '\'' +
+                ", marca='" + marca + '\'' +
+                ", modelo='" + modelo + '\'' +
+                ", color='" + color + '\'' +
+                ", idMovil=" + idMovil +
+                ", idPrestador=" + idPrestador +
+                ", latitud='" + latitud + '\'' +
+                ", longitud='" + longitud + '\'' +
+                ", calleOrigen='" + calleOrigen + '\'' +
+                ", numPuertaOrigen='" + numPuertaOrigen + '\'' +
+                ", esquinaOrigen='" + esquinaOrigen + '\'' +
+                ", falla='" + falla + '\'' +
+                ", calleDestino='" + calleDestino + '\'' +
+                ", ciudadDestino='" + ciudadDestino + '\'' +
+                ", locDestino='" + locDestino + '\'' +
+                ", observaciones='" + observaciones + '\'' +
+                ", estado='" + estado + '\'' +
+                ", llegadaLugar=" + llegadaLugar +
+                '}';
+    }
 }

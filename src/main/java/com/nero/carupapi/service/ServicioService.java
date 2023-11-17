@@ -27,7 +27,11 @@ public class ServicioService {
 
     private final FallaRepository fallaRepo;
 
-    public ServicioService(UsuarioRepository userRepo, ServicioRepository servRepo, PaisRepository paisRepo, CiudadRepository ciudadRepo, LocalidadRepository localidadRepo, ZonaRepository zonaRepo, ClienteService cliSrv, FallaRepository fallaRepo) {
+    private final VehiculoRepository vehiculoRepo;
+
+    private final MarcaRepository marcaRepo;
+
+    public ServicioService(UsuarioRepository userRepo, ServicioRepository servRepo, PaisRepository paisRepo, CiudadRepository ciudadRepo, LocalidadRepository localidadRepo, ZonaRepository zonaRepo, ClienteService cliSrv, FallaRepository fallaRepo, VehiculoRepository vehiculoRepo, MarcaRepository marcaRepo) {
         this.userRepo = userRepo;
         this.servRepo = servRepo;
         this.paisRepo = paisRepo;
@@ -36,6 +40,8 @@ public class ServicioService {
         this.zonaRepo = zonaRepo;
         this.cliSrv = cliSrv;
         this.fallaRepo = fallaRepo;
+        this.vehiculoRepo = vehiculoRepo;
+        this.marcaRepo = marcaRepo;
     }
 
     //ABM básicos
@@ -86,10 +92,14 @@ public class ServicioService {
             Optional<Usuario> usuario = userRepo.findById(s.getIdUsuario());
             Optional<Pais> paisOrigen = paisRepo.findById(s.getPaisOrigen());
             Optional<Localidad> locOrigen = localidadRepo.findById(s.getLocOrigen());
+            Optional<Localidad> locDestino = localidadRepo.findById(s.getLocDestino());
             Optional<Ciudad> ciudadOrigen = ciudadRepo.findById(s.getCiudadOrigen());
+            Optional<Ciudad> ciudadDestino = ciudadRepo.findById(s.getCiudadDestino());
             Optional<Zona> zona = zonaRepo.findById(  Integer.valueOf(s.getZona()));
             Optional<Cliente> cliente = cliSrv.obtenerCliente(s.getClienteId());
             Optional<Falla> falla = fallaRepo.findById(Integer.valueOf(s.getIdFalla()));
+            Optional<Vehiculo> vehiculo = vehiculoRepo.findById(s.getIdVehiculo());
+            Optional<Marca> marca = marcaRepo.findById(vehiculo.get().getIdMarca());
 
             ServicioWebDTO nuevo = new ServicioWebDTO();
                 nuevo.setIdSrv(s.getIdSrv());
@@ -103,7 +113,19 @@ public class ServicioService {
                 nuevo.setZona(zona.get().getNombre());
                 nuevo.setNombreCliente(cliente.get().getNombre());
                 nuevo.setCalleOrigen(s.getCalleOrigen());
+                nuevo.setNumPuertaOrigen(s.getNumPuertaOrigen());
+                nuevo.setEsquinaOrigen(s.getEsquinaOrigen());
                 nuevo.setFalla(falla.get().getNombre());
+                nuevo.setMatricula(vehiculo.get().getMatricula());
+                nuevo.setMarca(marca.get().getNombre());
+                nuevo.setModelo(vehiculo.get().getModelo());
+                nuevo.setColor(vehiculo.get().getColor());
+                nuevo.setLocDestino(locDestino.get().getNombre());
+                nuevo.setCiudadDestino(ciudadDestino.get().getNombre());
+                nuevo.setCalleDestino(s.getCalleDestino());
+                nuevo.setObservaciones(s.getObservaciones());
+
+
 
 
                     result.add(nuevo);
@@ -112,4 +134,5 @@ public class ServicioService {
         });
         return result;
     }
+
 }

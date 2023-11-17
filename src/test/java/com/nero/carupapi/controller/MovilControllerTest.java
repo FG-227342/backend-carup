@@ -50,6 +50,7 @@ public class MovilControllerTest {
         when(movRepo.getReferenceById(1)).thenReturn(movPrueba);
 
         Movil response = controller.obtenerMovilPorId(1);
-        System.out.println(response);
+       assertEquals(response.getIdMovil(), movPrueba.getIdMovil());
+
     }
 }
