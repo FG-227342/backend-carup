@@ -92,9 +92,9 @@ public class ServicioService {
             Optional<Usuario> usuario = userRepo.findById(s.getIdUsuario());
             Optional<Pais> paisOrigen = paisRepo.findById(s.getPaisOrigen());
             Optional<Localidad> locOrigen = localidadRepo.findById(s.getLocOrigen());
-            Optional<Localidad> locDestino = localidadRepo.findById(s.getLocDestino());
+            Optional<Localidad> locDestino = localidadRepo.findById(s.getLocDestino() != null ? s.getLocDestino() :0);
             Optional<Ciudad> ciudadOrigen = ciudadRepo.findById(s.getCiudadOrigen());
-            Optional<Ciudad> ciudadDestino = ciudadRepo.findById(s.getCiudadDestino());
+            Optional<Ciudad> ciudadDestino = ciudadRepo.findById(s.getCiudadDestino() != null ? s.getCiudadDestino() : 0);
             Optional<Zona> zona = zonaRepo.findById(  Integer.valueOf(s.getZona()));
             Optional<Cliente> cliente = cliSrv.obtenerCliente(s.getClienteId());
             Optional<Falla> falla = fallaRepo.findById(Integer.valueOf(s.getIdFalla()));
@@ -120,8 +120,8 @@ public class ServicioService {
                 nuevo.setMarca(marca.get().getNombre());
                 nuevo.setModelo(vehiculo.get().getModelo());
                 nuevo.setColor(vehiculo.get().getColor());
-                nuevo.setLocDestino(locDestino.get().getNombre());
-                nuevo.setCiudadDestino(ciudadDestino.get().getNombre());
+                locDestino.ifPresent(localidad -> nuevo.setLocDestino(localidad.getNombre()));
+                ciudadDestino.ifPresent(ciudad -> nuevo.setCiudadDestino(ciudad.getNombre()));
                 nuevo.setCalleDestino(s.getCalleDestino());
                 nuevo.setObservaciones(s.getObservaciones());
 

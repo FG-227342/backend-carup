@@ -1,5 +1,6 @@
 package com.nero.carupapi.controller;
 
+import com.nero.carupapi.dto.ClienteWebDTO;
 import com.nero.carupapi.model.Cliente;
 import com.nero.carupapi.model.TipoCliente;
 import com.nero.carupapi.repository.TipoClienteRepository;
@@ -24,6 +25,11 @@ public class ClienteController {
     @GetMapping
     public List<Cliente> listarClientes() {
         return cliService.listarClientes();
+    }
+
+    @GetMapping("/todosDTO")
+    public List<ClienteWebDTO> listarClientesDTO() {
+        return cliService.buscarTodosDTO();
     }
 
     @GetMapping("/{id}")

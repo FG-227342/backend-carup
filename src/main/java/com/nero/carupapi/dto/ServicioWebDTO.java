@@ -4,6 +4,7 @@ import jakarta.persistence.Id;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class ServicioWebDTO {
     @Id
@@ -56,8 +57,10 @@ public class ServicioWebDTO {
         this.idTarea = idTarea;
     }
 
-    public LocalDate getFecha() {
-        return fecha;
+    public String getFecha() {
+
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return this.fecha.format(pattern);
     }
 
     public void setFecha(LocalDate fecha) {

@@ -1,14 +1,9 @@
 package com.nero.carupapi.dto;
 
-
-import jakarta.persistence.Id;
-
-
 import java.time.LocalDateTime;
 
 public class TurnoDTO {
 
-    @Id
     private Short idMovil;
     private Short idChofer;
     private LocalDateTime fechaHora;

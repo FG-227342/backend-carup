@@ -1,9 +1,6 @@
 package com.nero.carupapi.dto;
 
-import jakarta.persistence.Id;
-
 public class VehiculoDTO {
-    @Id
     private Long idVehiculo;
 
     private String matricula;

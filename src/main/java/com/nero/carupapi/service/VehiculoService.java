@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -24,6 +25,24 @@ public class VehiculoService {
 
     public Vehiculo save(Vehiculo veh){
         return vehRepo.save(veh);
+    }
+
+    public Vehiculo actualizarVehiculo(Long id, Vehiculo nuevo) {
+        Vehiculo existente = vehRepo.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("El vehículo con id " + id + " no existe"));
+
+        Optional.ofNullable(nuevo.getIdMarca()).ifPresent(existente::setIdMarca);
+        Optional.ofNullable(nuevo.getMatricula()).ifPresent(existente::setMatricula);
+        Optional.ofNullable(nuevo.getModelo()).ifPresent(existente::setModelo);
+        Optional.ofNullable(nuevo.getColor()).ifPresent(existente::setColor);
+        Optional.ofNullable(nuevo.getAño()).ifPresent(existente::setAño);
+        Optional.ofNullable(nuevo.getIdCliente()).ifPresent(existente::setIdCliente);
+
+        return vehRepo.save(existente);
+    }
+
+    public Optional<Vehiculo> obtenerVehiculo(Long id) {
+        return vehRepo.findById(id);
     }
 
     public List<Vehiculo> findAll(){

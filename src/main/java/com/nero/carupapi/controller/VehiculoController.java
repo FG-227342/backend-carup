@@ -1,6 +1,7 @@
 package com.nero.carupapi.controller;
 
 import com.nero.carupapi.dto.VehiculoDTO;
+import com.nero.carupapi.model.Cliente;
 import com.nero.carupapi.model.Vehiculo;
 import com.nero.carupapi.service.VehiculoService;
 import org.springframework.http.HttpStatus;
@@ -34,5 +35,14 @@ public class VehiculoController {
     public ResponseEntity<Vehiculo> crearMovil(@RequestBody Vehiculo vhc) {
         Vehiculo v = vehService.save(vhc);
         return new ResponseEntity<>( v, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Vehiculo> actualizaVehiculo(@PathVariable Long id, @RequestBody Vehiculo veh) {
+        Vehiculo v  = vehService.actualizarVehiculo(id, veh);
+        if(v == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(v);
     }
 }
