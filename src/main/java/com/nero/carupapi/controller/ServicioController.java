@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(maxAge = 3600)
@@ -57,6 +58,27 @@ public class ServicioController {
     @GetMapping("/todosWebDTO")
     public List<ServicioWebDTO> obtenerTodosWebDTO() {
         return srvService.getAllWebDto();
+    }
+
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> estado) {
+        Optional<Servicio> buscado;
+
+        if (estado.containsKey("estado")) {
+            buscado = srvService.modificarEstado(id, estado.get("estado"));
+        } else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if(buscado.isPresent()){
+            return new ResponseEntity<>(buscado.get(), HttpStatus.OK);
+        }
+
+     else {
+
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
     }
 
 }

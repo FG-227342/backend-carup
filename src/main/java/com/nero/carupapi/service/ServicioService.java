@@ -135,4 +135,12 @@ public class ServicioService {
         return result;
     }
 
+    public Optional<Servicio> modificarEstado(Long IdServicio, String estado){
+        Optional<Servicio> srv = servRepo.findById(IdServicio);
+        if(srv.isPresent()){
+            srv.get().setEstado(estado);
+        }
+        return srv;
+    }
+
 }

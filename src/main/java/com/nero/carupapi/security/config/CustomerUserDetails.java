@@ -26,7 +26,7 @@ public class CustomerUserDetails implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return usrRepo.findByEmail(email)
                 .map(usr-> {
-                    var authorities = List.of(new SimpleGrantedAuthority("ADMIN"));
+                    var authorities = List.of(new SimpleGrantedAuthority(usr.getRol().getNombre()));
                   return new User(usr.getEmail(),usr.getClave(),authorities);
                 }).orElseThrow(()->new UsernameNotFoundException("User not found"));
     }
