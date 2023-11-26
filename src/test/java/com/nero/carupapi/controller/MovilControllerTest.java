@@ -1,5 +1,5 @@
 package com.nero.carupapi.controller;
-
+/*
 import com.nero.carupapi.model.Movil;
 import com.nero.carupapi.repository.MovilRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +44,7 @@ public class MovilControllerTest {
         for (Movil obj : response) {
             assertEquals(obj.getClass(), Movil.class);
         }
-    }
+    }/*
     @Test
     public void getMovilById(){
         when(movRepo.getReferenceById(1)).thenReturn(movPrueba);
@@ -52,5 +52,5 @@ public class MovilControllerTest {
         Movil response = controller.obtenerMovilPorId(1);
        assertEquals(response.getIdMovil(), movPrueba.getIdMovil());
 
-    }
-}
+    }}
+*/

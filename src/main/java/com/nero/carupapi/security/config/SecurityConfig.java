@@ -23,8 +23,8 @@ import java.util.List;
         @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTValidationFilter jwtValidationFilter) throws Exception {
 
-          var requestHandler = new CsrfTokenRequestAttributeHandler();
-            requestHandler.setCsrfRequestAttributeName("_csrf");
+     //     var requestHandler = new CsrfTokenRequestAttributeHandler();
+       //     requestHandler.setCsrfRequestAttributeName("_csrf");
 
             http.sessionManagement(sess->sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
             http.authorizeHttpRequests(auth-> auth.requestMatchers("/api/authenticate").permitAll());

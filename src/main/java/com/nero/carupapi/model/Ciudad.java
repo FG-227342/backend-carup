@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ciudad")
+@Table(name = "ciudades")
 public class Ciudad {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

@@ -45,4 +45,9 @@ public class VehiculoController {
         }
         return ResponseEntity.ok(v);
     }
+
+    @GetMapping("/todosPorCliente/{idCliente}")
+    public List<VehiculoDTO> todosPorIdCliente(@PathVariable Long idCliente) {
+        return vehService.todosPorIdCLiente(idCliente);
+    }
 }

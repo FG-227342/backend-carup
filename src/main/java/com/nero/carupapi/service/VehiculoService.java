@@ -72,4 +72,28 @@ public class VehiculoService {
 
         return result;
     }
+
+   public  List<VehiculoDTO> todosPorIdCLiente(Long idCliente){
+        List<Vehiculo> vehiculos = vehRepo.findAllByIdCliente(idCliente);
+
+        List<VehiculoDTO> result = new ArrayList<>();
+
+        vehiculos.forEach(v -> {
+
+            Optional<Marca> marca = marcaRepo.findById(v.getIdMarca());
+
+            VehiculoDTO nuevo = new VehiculoDTO();
+            nuevo.setIdVehiculo(v.getIdVehiculo());
+            nuevo.setMatricula(v.getMatricula());
+            nuevo.setIdMarca(v.getIdMarca());
+            nuevo.setNombreMarca(marca.get().getNombre());
+            nuevo.setModelo(v.getModelo());
+            nuevo.setColor(v.getColor());
+            nuevo.setAño(v.getAño());
+            nuevo.setIdCliente(v.getIdCliente());
+            result.add(nuevo);
+        });
+
+        return result;
+    }
 }

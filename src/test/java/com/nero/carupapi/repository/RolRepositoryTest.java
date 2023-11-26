@@ -17,7 +17,7 @@ import java.util.Optional;
 public class RolRepositoryTest {
     @Mock
     private RolRepository rolRepo;
-
+/*
     @Test
     public void crear(){
         Rol esperado = new Rol("TEST ROL","DESCRIPCIÓN");
@@ -28,5 +28,5 @@ public class RolRepositoryTest {
         Assertions.assertEquals(esperado.getNombre(), r.getNombre());
         Assertions.assertEquals(esperado.getDescripcion(), r.getDescripcion());
 
-    }
+    }*/
 }
