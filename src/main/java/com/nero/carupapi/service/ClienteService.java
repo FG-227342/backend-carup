@@ -1,6 +1,8 @@
 package com.nero.carupapi.service;
 
+import com.nero.carupapi.dto.ClienteVehiculosDTO;
 import com.nero.carupapi.dto.ClienteWebDTO;
+import com.nero.carupapi.dto.VehiculoDTO;
 import com.nero.carupapi.model.*;
 import com.nero.carupapi.repository.AfiliacionRepository;
 import com.nero.carupapi.repository.ClienteRepository;
@@ -22,11 +24,14 @@ public class ClienteService {
 
     private final AfiliacionRepository afiliaRepo;
 
-    public ClienteService(ClienteRepository cRepo, TipoClienteRepository tipoCliRepo, ConvenioRepository convRepo, AfiliacionRepository afiliaRepo) {
+    private final VehiculoService vehService;
+
+    public ClienteService(ClienteRepository cRepo, TipoClienteRepository tipoCliRepo, ConvenioRepository convRepo, AfiliacionRepository afiliaRepo, VehiculoService vehService) {
         this.cRepo = cRepo;
         this.tipoCliRepo = tipoCliRepo;
         this.convRepo = convRepo;
         this.afiliaRepo = afiliaRepo;
+        this.vehService = vehService;
     }
 
     public boolean existe(Long id) {
@@ -99,5 +104,74 @@ public class ClienteService {
             result.add(nuevo);
         });
         return result;
+    }
+
+    // retorna todos los clientes que tengan esa matricula
+    public List<Cliente> buscarPorMatricula(String matricula){
+        List<Long> idsClientes = vehService.buscarClientes(matricula);
+        List<Cliente> res = new ArrayList<Cliente>();
+
+        idsClientes.forEach(id->{
+            Optional<Cliente> cli = obtenerCliente(id);
+
+            if(cli.isPresent()){
+                res.add(cli.get());
+            }
+        });
+        return res;
+    }
+
+
+    public ClienteVehiculosDTO buscarPorMatriculaBSE(String matricula){
+        List<Long> idsClientes = vehService.buscarClientes(matricula);
+        Optional<Cliente> res = Optional.empty();
+
+        for(int i = 0; i< idsClientes.size(); i++){
+            Optional<Cliente> cli = obtenerCliente(idsClientes.get(i));
+
+            if(cli.isPresent() && cli.get().getIdConvenio() != null){
+                if(cli.get().getIdConvenio() == 18){
+                //mapeo
+                    ClienteVehiculosDTO result = new ClienteVehiculosDTO();
+                    result.setIdCliente(cli.get().getIdCliente());
+                    result.setNombre(cli.get().getNombre());
+                    result.setIdTipoCliente(cli.get().getIdTipoCliente());
+                    result.setIdAfiliacion(cli.get().getIdAfiliacion());
+                    result.setIdConvenio(cli.get().getIdConvenio());
+                    result.setTelefono(cli.get().getTelefono());
+                    result.setCelular(cli.get().getCelular());
+                    result.setDireccion(cli.get().getDireccion());
+                    result.setNotas(cli.get().getNotas());
+                    result.setDocumento(cli.get().getDocumento());
+                    List<VehiculoDTO> vehiculos = vehService.todosPorIdCLiente(cli.get().getIdCliente());
+                    result.setVehiculos(vehiculos);
+                    return result;
+                }
+            }
+        }
+    return null;
+    }
+
+    public ClienteVehiculosDTO buscarPorCiCARUP(String documento){
+        Cliente cli = buscarDirecto(documento);
+
+        if(cli != null){
+        //mapeo
+        ClienteVehiculosDTO result = new ClienteVehiculosDTO();
+        result.setNombre(cli.getNombre());
+        result.setIdCliente(cli.getIdCliente());
+        result.setIdTipoCliente(cli.getIdTipoCliente());
+         result.setIdAfiliacion(cli.getIdAfiliacion());
+         result.setIdConvenio(cli.getIdConvenio());
+         result.setTelefono(cli.getTelefono());
+         result.setCelular(cli.getCelular());
+         result.setDireccion(cli.getDireccion());
+         result.setNotas(cli.getNotas());
+         result.setDocumento(cli.getDocumento());
+         List<VehiculoDTO> vehiculos = vehService.todosPorIdCLiente(cli.getIdCliente());
+         result.setVehiculos(vehiculos);
+         return result;
+        }
+        return null;
     }
 }

@@ -120,14 +120,11 @@ public class ServicioService {
                 nuevo.setMarca(marca.get().getNombre());
                 nuevo.setModelo(vehiculo.get().getModelo());
                 nuevo.setColor(vehiculo.get().getColor());
+                nuevo.setEstado(s.getEstado());
                 locDestino.ifPresent(localidad -> nuevo.setLocDestino(localidad.getNombre()));
                 ciudadDestino.ifPresent(ciudad -> nuevo.setCiudadDestino(ciudad.getNombre()));
                 nuevo.setCalleDestino(s.getCalleDestino());
                 nuevo.setObservaciones(s.getObservaciones());
-
-
-
-
                     result.add(nuevo);
 
 
@@ -138,7 +135,25 @@ public class ServicioService {
     public Optional<Servicio> modificarEstado(Long IdServicio, String estado){
         Optional<Servicio> srv = servRepo.findById(IdServicio);
         if(srv.isPresent()){
-            srv.get().setEstado(estado);
+            srv.get().setEstado(estado.toUpperCase());
+            servRepo.save(srv.get());
+        }
+        return srv;
+    }
+
+    public Optional<Servicio> asignarServicio(Long IdServicio, Integer idMovil, Integer idPrestador){
+        Optional<Servicio> srv = servRepo.findById(IdServicio);
+        if(srv.isPresent()){
+            srv.get().setEstado("A");
+            // si viene un movil de la empresa
+            if(idMovil != null){
+               srv.get().setIdMovil(idMovil);
+               srv.get().setIdPrestador(null);
+            } if(idPrestador != null){
+                srv.get().setIdPrestador(idPrestador);
+                srv.get().setIdMovil(null);
+             }
+            servRepo.save(srv.get());
         }
         return srv;
     }

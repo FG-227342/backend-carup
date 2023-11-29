@@ -1,5 +1,6 @@
 package com.nero.carupapi.controller;
 
+import com.nero.carupapi.dto.ClienteVehiculosDTO;
 import com.nero.carupapi.dto.ClienteWebDTO;
 import com.nero.carupapi.model.Cliente;
 import com.nero.carupapi.model.TipoCliente;
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
-@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/api/clientes")
 public class ClienteController {
@@ -84,5 +84,31 @@ public class ClienteController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+
+    @GetMapping("/clientesPorMatricula/{matricula}")
+    public List<Cliente> clientesPorMatricula(@PathVariable String matricula) {
+        return cliService.buscarPorMatricula(matricula);
+    }
+
+    // encuentro el cliente BSE correspondiente a la matrícula con sus vehiculos correspondientes
+    @GetMapping("/clienteBsePorMatricula/{matricula}")
+    public ResponseEntity<ClienteVehiculosDTO> clienteBsePorMatricula(@PathVariable String matricula) {
+        ClienteVehiculosDTO cli = cliService.buscarPorMatriculaBSE(matricula);
+        if(cli != null){
+            return new ResponseEntity<>( cli, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    // encuentro el cliente CARUP correspondiente a la cedula + los vehículos
+    @GetMapping("/clienteCARUP/{documento}")
+    public ResponseEntity<ClienteVehiculosDTO> clienteCarupPorCi(@PathVariable String documento) {
+        ClienteVehiculosDTO cli = cliService.buscarPorCiCARUP(documento);
+        if(cli != null){
+            return new ResponseEntity<>( cli, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

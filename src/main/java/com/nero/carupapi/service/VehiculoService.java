@@ -96,4 +96,20 @@ public class VehiculoService {
 
         return result;
     }
+
+    public List<Vehiculo> buscarPorMatricula(String matricula){
+        return vehRepo.findByMatricula(matricula);
+    }
+
+    //retornar id cliente a partir de la matricula
+    public List<Long> buscarClientes(String matricula){
+        List<Vehiculo> vehiculos = vehRepo.findByMatricula(matricula);
+        List<Long> idsClientes = new ArrayList<Long>();
+        if(vehiculos != null){
+            vehiculos.forEach(vehiculo -> {
+                idsClientes.add(vehiculo.getIdCliente());
+            });
+        }
+        return idsClientes;
+    }
 }

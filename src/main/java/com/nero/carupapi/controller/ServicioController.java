@@ -1,9 +1,7 @@
 package com.nero.carupapi.controller;
 
 import com.nero.carupapi.dto.ServicioWebDTO;
-import com.nero.carupapi.model.Cliente;
 import com.nero.carupapi.model.Servicio;
-import com.nero.carupapi.model.Turno;
 import com.nero.carupapi.service.ServicioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/api/servicios")
 public class ServicioController {
@@ -79,6 +76,26 @@ public class ServicioController {
 
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+    }
+
+    @PatchMapping("/asignarMovil/{id}")
+    public ResponseEntity<Servicio> asignar(@PathVariable Long id, @RequestBody Map<String, Integer> data) {
+        Optional<Servicio> buscado;
+
+        if (data.containsKey("idMovil") || data.containsKey("idPrestador")) {
+            buscado = srvService.asignarServicio(id, data.get("idMovil"), data.get("idPrestador"));
+        } else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if(buscado.isPresent()){
+            return new ResponseEntity<>(buscado.get(), HttpStatus.OK);
+        }
+
+        else {
+
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }

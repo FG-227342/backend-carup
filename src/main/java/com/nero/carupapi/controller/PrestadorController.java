@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(maxAge = 3600)
 @RestController
 @RequestMapping("/api/prestadores")
 public class PrestadorController {
