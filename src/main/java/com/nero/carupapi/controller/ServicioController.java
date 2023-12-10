@@ -57,6 +57,15 @@ public class ServicioController {
         return srvService.getAllWebDto();
     }
 
+    @GetMapping("/servicioDTO/{id}")
+    public ResponseEntity<ServicioWebDTO> obtenerSrvDTO(@PathVariable Long id) {
+        ServicioWebDTO s = srvService.getOneDTO(id);
+        if(s == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(s);
+    }
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> estado) {

@@ -7,7 +7,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class ServicioWebDTO {
-    @Id
     private Long idSrv;
     private Short idTarea;
     private LocalDate fecha;
