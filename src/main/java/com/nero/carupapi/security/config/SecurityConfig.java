@@ -2,10 +2,14 @@ package com.nero.carupapi.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,55 +22,86 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
-    @Configuration
-    public class SecurityConfig {
-        @Bean
+
+@Configuration
+public class SecurityConfig {
+/*
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        var config = new CorsConfiguration();
+        // config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("*"));
+        // config.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
+        config.setAllowedMethods(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+
+        var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+/*
+    @Bean
+    public SecurityFilterChain securityFilterChainDefault(HttpSecurity http) throws Exception {
+        http.cors(cors -> corsConfigurationSource());
+        http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.NEVER));
+        http
+                .csrf(csrf -> csrf.disable()).
+                authorizeHttpRequests(auth -> auth
+                        .anyRequest()
+                        .authenticated());
+
+
+        return http.build();
+    }
+*/
+    @Bean
+   // @Profile("deploy")
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTValidationFilter jwtValidationFilter) throws Exception {
 
-     //     var requestHandler = new CsrfTokenRequestAttributeHandler();
-       //     requestHandler.setCsrfRequestAttributeName("_csrf");
+        //     var requestHandler = new CsrfTokenRequestAttributeHandler();
+        //     requestHandler.setCsrfRequestAttributeName("_csrf");
 
-            http.sessionManagement(sess->sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-            http.authorizeHttpRequests(auth-> auth.requestMatchers("/api/authenticate").permitAll());
-            http.authorizeHttpRequests(auth->auth.anyRequest().authenticated()).formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
-
-
-
-            http.cors(cors-> corsConfigurationSource());
-
-            http.csrf(csrf->csrf.disable());
+        http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/authenticate").permitAll());
+        http.authorizeHttpRequests(auth -> auth.anyRequest().authenticated()).formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults());
 
 
-             http.addFilterAfter(jwtValidationFilter, BasicAuthenticationFilter.class);
+        http.cors(cors -> corsConfigurationSource());
 
-            return http.build();
-      }
+        http.csrf(csrf -> csrf.disable());
+
+
+        http.addFilterAfter(jwtValidationFilter, BasicAuthenticationFilter.class);
+
+        return http.build();
+    }
+
 
     // quitar esto despues/*
-     @Bean
-        PasswordEncoder passwordEncoder(){
-            return NoOpPasswordEncoder.getInstance();
-        }
 
-            @Bean
-            AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-                return configuration.getAuthenticationManager();
-            }
-
-        @Bean
-        CorsConfigurationSource corsConfigurationSource(){
-            var config = new CorsConfiguration();
-            // config.setAllowedOrigins(List.of("http://localhost:3000"));
-            config.setAllowedOrigins(List.of("*"));
-            // config.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
-            config.setAllowedMethods(List.of("*"));
-            config.setAllowedHeaders(List.of("*"));
-
-            var source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", config);
-            return source;
-        }
-
-
-
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
     }
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        var config = new CorsConfiguration();
+        // config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("*"));
+        // config.setAllowedMethods(List.of("GET","POST","PUT","DELETE"));
+        config.setAllowedMethods(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+
+        var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+
+}

@@ -104,6 +104,8 @@ public class ServicioService {
             Optional<Marca> marca = marcaRepo.findById(vehiculo.get().getIdMarca());
 
             ServicioWebDTO nuevo = new ServicioWebDTO();
+            nuevo.setLatitud(s.getLatitud());
+            nuevo.setLongitud(s.getLongitud());
             nuevo.setIdSrv(s.getIdSrv());
             nuevo.setIdTarea(s.getIdTarea());
             nuevo.setFecha(s.getFecha());
@@ -144,8 +146,10 @@ public class ServicioService {
     public Optional<Servicio> asignarServicio(Long IdServicio, Integer idMovil, Integer idPrestador) {
         Optional<Servicio> srv = servRepo.findById(IdServicio);
         Optional<UsuariosMobile> u = Optional.empty();
+        Short idTarea = 0;
         if (srv.isPresent()) {
             srv.get().setEstado("A");
+            idTarea = srv.get().getIdTarea();
             // si viene un movil de la empresa
             if (idMovil != null) {
                 srv.get().setIdMovil(idMovil);
@@ -160,7 +164,7 @@ public class ServicioService {
             }
             if (u.isPresent()) {
                 String playerId = u.get().getPlayerId();
-                enviarNotificacion(IdServicio, playerId);
+                enviarNotificacion(IdServicio, idTarea, playerId);
             }
             servRepo.save(srv.get());
         }
@@ -168,7 +172,7 @@ public class ServicioService {
     }
 
     //Envío de notificación al dispositivo desde One Signal, identificado por la playerId obenida en la BD
-    private String enviarNotificacion(Long idServicio, String playerId) {
+    private String enviarNotificacion(Long idServicio, Short IdTarea, String playerId) {
         String apiUrl = "https://onesignal.com/api/v1/notifications";
         String requestBody = """
                 {
@@ -177,7 +181,7 @@ public class ServicioService {
                 "include_player_ids":["%s"],
                   "contents": {"en": "Se le ha asignado el servicio %s"}
                 }
-                """.formatted(idServicio, playerId, idServicio);
+                """.formatted(idServicio, playerId, IdTarea);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
@@ -230,4 +234,20 @@ public class ServicioService {
         }
         return null;
     }
+
+    // Servicios asignados a un movil o prestador determinado
+    public List<Servicio> obtenerTodosPorIdMovil(Long idUsuario) {
+        Optional<UsuariosMobile> usuario = usrMobileRepo.findById(idUsuario);
+
+        if(usuario.isPresent()){
+            if(usuario.get().getChofer() == null){
+                return servRepo.obtenerServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
+            }else{
+                return servRepo.obtenerServiciosPorMovil(usuario.get().getChofer().getIdChofer());
+            }
+        }
+        return null;
+    }
+
+
 }

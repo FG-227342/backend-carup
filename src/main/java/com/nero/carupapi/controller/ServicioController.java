@@ -107,4 +107,14 @@ public class ServicioController {
         }
     }
 
+    @GetMapping("/usuarioMobile/{id}")
+    public ResponseEntity<List<Servicio>> serviciosPorUsuarioMovil(@PathVariable Long id) {
+        List<Servicio> res = srvService.obtenerTodosPorIdMovil(id);
+        if(res !=null){
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(res, HttpStatus.NO_CONTENT);
+        }
+    }
+
 }

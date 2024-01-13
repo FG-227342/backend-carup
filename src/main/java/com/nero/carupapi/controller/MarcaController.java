@@ -19,7 +19,7 @@ public class MarcaController {
     }
 
     @GetMapping
-    public List<Marca> getFallas() {
+    public List<Marca> getMarcas() {
         return marcaRepo.findAll();
     }
 }

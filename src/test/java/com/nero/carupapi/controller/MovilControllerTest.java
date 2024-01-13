@@ -1,5 +1,5 @@
 package com.nero.carupapi.controller;
-/*
+
 import com.nero.carupapi.model.Movil;
 import com.nero.carupapi.repository.MovilRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,13 +8,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Profile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.hamcrest.Matchers.any;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+@Profile("test")
 @ExtendWith(MockitoExtension.class)
 public class MovilControllerTest {
     @InjectMocks
@@ -26,12 +29,12 @@ public class MovilControllerTest {
 
     @BeforeEach
     void setUp() {
-        movPrueba = new Movil("Móvil 157","STX5022", (byte) 0);
+        movPrueba = new Movil("Móvil 157", "STX5022", (byte) 0);
         movPrueba.setIdMovil(1);
     }
 
     @Test
-    public void getMoviles(){
+    public void getMoviles() {
         ArrayList<Movil> responseRepo = new ArrayList<>();
         responseRepo.add(movPrueba);
         when(movRepo.findAll()).thenReturn(responseRepo);
@@ -44,13 +47,33 @@ public class MovilControllerTest {
         for (Movil obj : response) {
             assertEquals(obj.getClass(), Movil.class);
         }
-    }/*
+    }
     @Test
     public void getMovilById(){
-        when(movRepo.getReferenceById(1)).thenReturn(movPrueba);
-
+        when(movRepo.findById(1)).thenReturn(Optional.ofNullable(movPrueba));
         Movil response = controller.obtenerMovilPorId(1);
-       assertEquals(response.getIdMovil(), movPrueba.getIdMovil());
+        assertEquals(response.getIdMovil(), movPrueba.getIdMovil());
+    }
 
-    }}
+    @Test
+    public void getMovilByIdNull(){
+        assertNull(controller.obtenerMovilPorId(1));
+    }
+/*
+    @Test
+    public void actualizar(){
+        when(movRepo.findById(1)).thenReturn(Optional.ofNullable(movPrueba));
+
+
+        Movil MovilNuevo = new Movil("nuevo", "STX5022", (byte) 1);
+        MovilNuevo.setIdMovil(1);
+
+        when(movRepo.save(MovilNuevo)).thenReturn(MovilNuevo);
+
+        Movil movilActual = controller.actualizarMovil(1,MovilNuevo);
+        System.out.println("Actual" + movilActual);
+        System.out.println(MovilNuevo);
+
+    }
 */
+}
