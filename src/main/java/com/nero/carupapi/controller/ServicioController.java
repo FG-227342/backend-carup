@@ -1,5 +1,6 @@
 package com.nero.carupapi.controller;
 
+import com.nero.carupapi.dto.ServicioMobileDTO;
 import com.nero.carupapi.dto.ServicioWebDTO;
 import com.nero.carupapi.model.Servicio;
 import com.nero.carupapi.service.ServicioService;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -76,15 +78,7 @@ public class ServicioController {
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        if(buscado.isPresent()){
-            return new ResponseEntity<>(buscado.get(), HttpStatus.OK);
-        }
-
-     else {
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+        return buscado.map(servicio -> new ResponseEntity<>(servicio, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PatchMapping("/asignarMovil/{id}")
@@ -96,24 +90,49 @@ public class ServicioController {
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return buscado.map(servicio -> new ResponseEntity<>(servicio, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
-        if(buscado.isPresent()){
-            return new ResponseEntity<>(buscado.get(), HttpStatus.OK);
-        }
-
-        else {
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PatchMapping("/desasignar/{SrvId}")
+    public ResponseEntity<String> desasignarServicio(@PathVariable Long SrvId){
+        boolean res = srvService.desasignarServicio(SrvId);
+        if(res){
+            return new ResponseEntity<>("Servicio desasignado correctamente", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("No se encontró el servicio", HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/usuarioMobile/{id}")
-    public ResponseEntity<List<Servicio>> serviciosPorUsuarioMovil(@PathVariable Long id) {
-        List<Servicio> res = srvService.obtenerTodosPorIdMovil(id);
+    public ResponseEntity<List<ServicioMobileDTO>> serviciosPorUsuarioMovil(@PathVariable Long id) {
+        List<ServicioMobileDTO> res = srvService.obtenerTodosPorIdMovil(id);
         if(res !=null){
             return new ResponseEntity<>(res, HttpStatus.OK);
         } else{
-            return new ResponseEntity<>(res, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/buscarPorTarea")
+    public ResponseEntity<Servicio> buscarPorTarea(@RequestBody Map<String, String> data) {
+        Servicio buscado;
+        LocalDate fecha;
+        if(data.get("fecha") == null){
+            fecha = LocalDate.now();
+        } else {
+            fecha =LocalDate.parse(data.get("fecha"));
+        }
+        System.out.println(fecha);
+        if (data.containsKey("idTarea")) {
+
+            buscado = srvService.buscarSrvPorTarea(Short.valueOf(data.get("idTarea")),fecha);
+            if(buscado != null){
+                return new ResponseEntity<>(buscado,HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        } else{
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -19,9 +19,7 @@ public class ServicioWebDTO {
     private String nombreCliente;
     private Long idVehiculo;
     private String matricula;
-
     private String marca;
-
     private String modelo;
     private String color;
     private Integer idMovil;
@@ -38,7 +36,10 @@ public class ServicioWebDTO {
     private String observaciones;
     private String estado;
     private Byte llegadaLugar;
-
+    private String solicitante;
+    private String celSolicitante;
+    private String nombreMovil;
+    private String nombrePrestador;
 
     public Long getIdSrv() {
         return idSrv;
@@ -272,6 +273,38 @@ public class ServicioWebDTO {
 
     public void setMatricula(String matricula) {
         this.matricula = matricula;
+    }
+
+    public String getSolicitante() {
+        return solicitante;
+    }
+
+    public void setSolicitante(String solicitante) {
+        this.solicitante = solicitante;
+    }
+
+    public String getCelSolicitante() {
+        return celSolicitante;
+    }
+
+    public void setCelSolicitante(String celSolicitante) {
+        this.celSolicitante = celSolicitante;
+    }
+
+    public String getNombreMovil() {
+        return nombreMovil;
+    }
+
+    public void setNombreMovil(String nombreMovil) {
+        this.nombreMovil = nombreMovil;
+    }
+
+    public String getNombrePrestador() {
+        return nombrePrestador;
+    }
+
+    public void setNombrePrestador(String nombrePrestador) {
+        this.nombrePrestador = nombrePrestador;
     }
 
     @Override

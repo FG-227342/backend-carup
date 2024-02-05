@@ -38,6 +38,9 @@ public class Servicio {
     private String observaciones;
     private String estado;
     private Byte llegadaLugar;
+    private String solicitante;
+    private String celSolicitante;
+    private LocalTime horaAsignado;
 
     public Servicio() {
         this.fecha = LocalDate.now();
@@ -245,4 +248,58 @@ public class Servicio {
         this.llegadaLugar = llegadaLugar;
     }
 
+    public LocalTime getHoraAsignado() {
+        return horaAsignado;
+    }
+
+    public void setHoraAsignado(LocalTime horaAsignado) {
+        this.horaAsignado = horaAsignado;
+    }
+
+    public String getSolicitante() {
+        return solicitante;
+    }
+
+    public void setSolicitante(String solicitante) {
+        this.solicitante = solicitante;
+    }
+
+    public String getCelSolicitante() {
+        return celSolicitante;
+    }
+
+    public void setCelSolicitante(String celSolicitante) {
+        this.celSolicitante = celSolicitante;
+    }
+
+    @Override
+    public String toString() {
+        return "Servicio{" +
+                "idSrv=" + idSrv +
+                ", idTarea=" + idTarea +
+                ", fecha=" + fecha +
+                ", hora=" + hora +
+                ", idUsuario=" + idUsuario +
+                ", paisOrigen=" + paisOrigen +
+                ", ciudadOrigen=" + ciudadOrigen +
+                ", locOrigen=" + locOrigen +
+                ", zona=" + zona +
+                ", clienteId=" + clienteId +
+                ", idVehiculo=" + idVehiculo +
+                ", idMovil=" + idMovil +
+                ", idPrestador=" + idPrestador +
+                ", latitud='" + latitud + '\'' +
+                ", longitud='" + longitud + '\'' +
+                ", calleOrigen='" + calleOrigen + '\'' +
+                ", numPuertaOrigen='" + numPuertaOrigen + '\'' +
+                ", esquinaOrigen='" + esquinaOrigen + '\'' +
+                ", idFalla=" + idFalla +
+                ", calleDestino='" + calleDestino + '\'' +
+                ", ciudadDestino=" + ciudadDestino +
+                ", locDestino=" + locDestino +
+                ", observaciones='" + observaciones + '\'' +
+                ", estado='" + estado + '\'' +
+                ", llegadaLugar=" + llegadaLugar +
+                '}';
+    }
 }

@@ -40,10 +40,10 @@ public class AuthController {
         final var token = this.jwtService.generateToken(userDetails);
         if(resultado.get(1).getClass() == Usuario.class){
             Usuario usuario = (Usuario)resultado.get(1);
-            return ResponseEntity.ok(new JWTResponse(token, usuario.getNombre()));
+            return ResponseEntity.ok(new JWTResponse(token, usuario.getNombre(), null));
         } else{
             UsuariosMobile usuario = (UsuariosMobile)resultado.get(1);
-            return ResponseEntity.ok(new JWTResponse(token, usuario.getNombre()));
+            return ResponseEntity.ok(new JWTResponse(token, usuario.getNombre(),usuario.getIdUsuario()));
         }
 
     }

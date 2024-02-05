@@ -1,16 +1,10 @@
 package com.nero.carupapi;
 
-import com.nero.carupapi.dto.ServicioWebDTO;
-import com.nero.carupapi.model.Cliente;
-import com.nero.carupapi.model.Servicio;
-import com.nero.carupapi.repository.ClienteRepository;
-import com.nero.carupapi.repository.ServicioRepository;
-import com.nero.carupapi.service.ClienteService;
-import com.nero.carupapi.service.ServicioService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.ApplicationContext;
+
+import java.util.Optional;
 
 @SpringBootApplication
 public class CarupApiApplication {
@@ -19,6 +13,7 @@ public class CarupApiApplication {
 		ApplicationContext c = SpringApplication.run(CarupApiApplication.class, args);
 		//ClienteRepository cliRe = c.getBean(ClienteRepository.class);
 		//ClienteService cliServ = c.getBean(ClienteService.class);
+
 
 		//Cliente b= new Cliente("User Test", "3.417.146-7", "Direccion Prueba 1", "095478451", "123541", 1, null, null, "Created by Test");
 		//ServicioService se = c.getBean(ServicioService.class);

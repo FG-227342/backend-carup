@@ -1,12 +1,17 @@
 package com.nero.carupapi.service;
 
+import com.nero.carupapi.dto.ServicioMobileDTO;
 import com.nero.carupapi.dto.ServicioWebDTO;
 import com.nero.carupapi.model.*;
 import com.nero.carupapi.repository.*;
+import com.nero.carupapi.utils.ServicioMobileDTOConverter;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +39,13 @@ public class ServicioService {
 
     private final MarcaRepository marcaRepo;
 
-    public ServicioService(UsuariosMobileRepository usrMobileRepo, RestTemplateBuilder restTemplate, UsuarioRepository userRepo, ServicioRepository servRepo, PaisRepository paisRepo, CiudadRepository ciudadRepo, LocalidadRepository localidadRepo, ZonaRepository zonaRepo, ClienteService cliSrv, FallaRepository fallaRepo, VehiculoRepository vehiculoRepo, MarcaRepository marcaRepo) {
+    private final MovilRepository movilRepo;
+
+    private final PrestadorRepository prestadorRepo;
+
+    private final ServicioMobileDTOConverter mobileDTOConverter;
+
+    public ServicioService(UsuariosMobileRepository usrMobileRepo, RestTemplateBuilder restTemplate, UsuarioRepository userRepo, ServicioRepository servRepo, PaisRepository paisRepo, CiudadRepository ciudadRepo, LocalidadRepository localidadRepo, ZonaRepository zonaRepo, ClienteService cliSrv, FallaRepository fallaRepo, VehiculoRepository vehiculoRepo, MarcaRepository marcaRepo, MovilRepository movilRepo, PrestadorRepository prestadorRepo, ServicioMobileDTOConverter mobileDTOConverter) {
         this.usrMobileRepo = usrMobileRepo;
         this.restTemplate = restTemplate.build();
         this.userRepo = userRepo;
@@ -47,6 +58,9 @@ public class ServicioService {
         this.fallaRepo = fallaRepo;
         this.vehiculoRepo = vehiculoRepo;
         this.marcaRepo = marcaRepo;
+        this.movilRepo = movilRepo;
+        this.prestadorRepo = prestadorRepo;
+        this.mobileDTOConverter = mobileDTOConverter;
     }
 
     //ABM básicos
@@ -102,6 +116,8 @@ public class ServicioService {
             Optional<Falla> falla = fallaRepo.findById(Integer.valueOf(s.getIdFalla()));
             Optional<Vehiculo> vehiculo = vehiculoRepo.findById(s.getIdVehiculo() != null ? s.getIdVehiculo() : 0);
             Optional<Marca> marca = marcaRepo.findById(vehiculo.get().getIdMarca());
+            Optional<Movil> movil = s.getIdMovil() != null ? movilRepo.findById(s.getIdMovil()) : Optional.empty();
+            Optional<Prestador> prestador = s.getIdPrestador() != null ? prestadorRepo.findById(s.getIdPrestador()) : Optional.empty();
 
             ServicioWebDTO nuevo = new ServicioWebDTO();
             nuevo.setLatitud(s.getLatitud());
@@ -125,10 +141,16 @@ public class ServicioService {
             nuevo.setModelo(vehiculo.get().getModelo());
             nuevo.setColor(vehiculo.get().getColor());
             nuevo.setEstado(s.getEstado());
+            nuevo.setSolicitante(s.getSolicitante());
+            nuevo.setCelSolicitante(s.getCelSolicitante());
+            nuevo.setIdMovil(s.getIdMovil());
+            nuevo.setIdPrestador(s.getIdPrestador());
             locDestino.ifPresent(localidad -> nuevo.setLocDestino(localidad.getNombre()));
             ciudadDestino.ifPresent(ciudad -> nuevo.setCiudadDestino(ciudad.getNombre()));
             nuevo.setCalleDestino(s.getCalleDestino());
             nuevo.setObservaciones(s.getObservaciones());
+            movil.ifPresent(m -> nuevo.setNombreMovil(m.getNombre()));
+            prestador.ifPresent(p-> nuevo.setNombrePrestador(p.getNombre()));
             result.add(nuevo);
         });
         return result;
@@ -149,6 +171,7 @@ public class ServicioService {
         Short idTarea = 0;
         if (srv.isPresent()) {
             srv.get().setEstado("A");
+            srv.get().setHoraAsignado(LocalTime.now());
             idTarea = srv.get().getIdTarea();
             // si viene un movil de la empresa
             if (idMovil != null) {
@@ -169,6 +192,18 @@ public class ServicioService {
             servRepo.save(srv.get());
         }
         return srv;
+    }
+
+    public boolean desasignarServicio(Long IdServicio){
+        Optional<Servicio> srv = servRepo.findById(IdServicio);
+        if(srv.isPresent()){
+            srv.get().setEstado("P");
+            srv.get().setIdMovil(null);
+            srv.get().setIdPrestador(null);
+            servRepo.save(srv.get());
+            return true;
+        }
+        return false;
     }
 
     //Envío de notificación al dispositivo desde One Signal, identificado por la playerId obenida en la BD
@@ -236,9 +271,10 @@ public class ServicioService {
     }
 
     // Servicios asignados a un movil o prestador determinado
-    public List<Servicio> obtenerTodosPorIdMovil(Long idUsuario) {
+    public List<ServicioMobileDTO> obtenerTodosPorIdMovil(Long idUsuario) {
         Optional<UsuariosMobile> usuario = usrMobileRepo.findById(idUsuario);
-
+        List<Servicio> servicios = new ArrayList<>();
+/*
         if(usuario.isPresent()){
             if(usuario.get().getChofer() == null){
                 return servRepo.obtenerServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
@@ -247,7 +283,31 @@ public class ServicioService {
             }
         }
         return null;
+        */
+        if(usuario.isPresent()){
+            if(usuario.get().getChofer() == null){
+                servicios =  servRepo.obtenerServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
+            }else{
+                servicios = servRepo.obtenerServiciosPorMovil(usuario.get().getChofer().getIdChofer());
+            }
+            List<ServicioMobileDTO> serviciosMobile = new ArrayList<>();
+
+            servicios.forEach(s -> {
+                serviciosMobile.add(convertir(s));
+            });
+
+            return serviciosMobile;
+        }
+
+        return null;
+    }
+
+    public Servicio buscarSrvPorTarea(Short idTarea, LocalDate fecha) {
+        return servRepo.obtenerSrvPorTarea(idTarea,fecha);
     }
 
 
+    public ServicioMobileDTO convertir(Servicio s){
+        return mobileDTOConverter.convertServicioMobileDTO(s);
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ServicioRepository extends JpaRepository<Servicio, Long> {
@@ -15,4 +16,7 @@ public interface ServicioRepository extends JpaRepository<Servicio, Long> {
 
     @Query("SELECT u FROM Servicio u WHERE u.idPrestador = :id and u.estado IN ('A','X')")
     List<Servicio> obtenerServiciosPorPrestador(@Param("id") Short id);
+
+    @Query("SELECT s FROM Servicio s WHERE s.idTarea = :idTarea and s.fecha =:fecha")
+    Servicio obtenerSrvPorTarea(@Param("idTarea") Short idTarea,@Param("fecha") LocalDate fecha);
 }
