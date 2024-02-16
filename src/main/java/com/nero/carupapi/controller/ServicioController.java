@@ -59,6 +59,20 @@ public class ServicioController {
         return srvService.getAllWebDto();
     }
 
+    @PostMapping("/todosWebDTO/rangoFechas")
+    public ResponseEntity<List<ServicioWebDTO>> obtenerTodosWebDTOFiltrado(@RequestBody Map<String, String> data) {
+
+        if (data.containsKey("fechaInicial") && data.containsKey("fechaFinal")) {
+            LocalDate fechaIni = LocalDate.parse(data.get("fechaInicial"));
+            LocalDate fechaFin = LocalDate.parse(data.get("fechaFinal"));
+            List<ServicioWebDTO> res = srvService.getAllWebDtoBetwenDates(fechaIni,fechaFin);
+            return new ResponseEntity<List<ServicioWebDTO>>(res,HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     @GetMapping("/servicioDTO/{id}")
     public ResponseEntity<ServicioWebDTO> obtenerSrvDTO(@PathVariable Long id) {
         ServicioWebDTO s = srvService.getOneDTO(id);
@@ -68,7 +82,7 @@ public class ServicioController {
         return ResponseEntity.ok(s);
     }
 
-
+/*
     @PatchMapping("/{id}")
     public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> estado) {
         Optional<Servicio> buscado;
@@ -79,14 +93,24 @@ public class ServicioController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return buscado.map(servicio -> new ResponseEntity<>(servicio, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }*/
+@PatchMapping("/{id}")
+public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> estado) {
+
+    if (estado.containsKey("estado")) {
+        srvService.modificarEstado(id, estado.get("estado"));
+        return new ResponseEntity<>(HttpStatus.OK);
+    } else{
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+}
 
     @PatchMapping("/asignarMovil/{id}")
-    public ResponseEntity<Servicio> asignar(@PathVariable Long id, @RequestBody Map<String, Integer> data) {
+    public ResponseEntity<Servicio> asignar(@PathVariable Long id, @RequestBody Map<String, Integer> data){
         Optional<Servicio> buscado;
 
-        if (data.containsKey("idMovil") || data.containsKey("idPrestador")) {
-            buscado = srvService.asignarServicio(id, data.get("idMovil"), data.get("idPrestador"));
+        if (data.containsKey("idChofer") || data.containsKey("idPrestador")) {
+            buscado = srvService.asignarServicio(id, data.get("idChofer"), data.get("idPrestador"));
         } else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -102,10 +126,10 @@ public class ServicioController {
             return new ResponseEntity<>("No se encontró el servicio", HttpStatus.NOT_FOUND);
         }
     }
-
+    /*Solo los servicios pendientes o Aceptados*/
     @GetMapping("/usuarioMobile/{id}")
     public ResponseEntity<List<ServicioMobileDTO>> serviciosPorUsuarioMovil(@PathVariable Long id) {
-        List<ServicioMobileDTO> res = srvService.obtenerTodosPorIdMovil(id);
+        List<ServicioMobileDTO> res = srvService.obtenerPendientesPorIdMovil(id);
         if(res !=null){
             return new ResponseEntity<>(res, HttpStatus.OK);
         } else{
@@ -113,7 +137,24 @@ public class ServicioController {
         }
     }
 
-    @GetMapping("/buscarPorTarea")
+    @GetMapping("/usuarioMobile/todos/{id}")
+    public ResponseEntity<List<ServicioMobileDTO>> todosServiciosPorUsuarioMovil(@PathVariable Long id) {
+        List<ServicioMobileDTO> res = srvService.obtenerTodossPorIdMovil(id);
+        if(res !=null){
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } else{
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    // si no viene la "fecha" toma la fecha actual por defecto
+    /* Body esperado:
+    {
+    "idTarea":2,
+    "fecha": "2024-02-03"
+        }
+     */
+    @PostMapping("/buscarPorTarea")
     public ResponseEntity<Servicio> buscarPorTarea(@RequestBody Map<String, String> data) {
         Servicio buscado;
         LocalDate fecha;

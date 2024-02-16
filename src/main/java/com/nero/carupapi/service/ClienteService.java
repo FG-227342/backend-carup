@@ -60,6 +60,8 @@ public class ClienteService {
     }
 
     public void eliminarCliente(Long id) {
+        // borrar servicios y vehiculoa
+
         cRepo.deleteById(id);
     }
 

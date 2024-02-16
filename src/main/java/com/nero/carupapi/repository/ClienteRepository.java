@@ -3,6 +3,7 @@ package com.nero.carupapi.repository;
 import com.nero.carupapi.model.Cliente;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,5 @@ public interface ClienteRepository extends JpaRepository<Cliente,Long> {
     List<Cliente> buscarPorTexto(@Param("texto") String texto, Pageable pageable);
 
     Cliente findByDocumentoAndIdTipoCliente(String documento, int tipoCliente);
+
 }

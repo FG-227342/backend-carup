@@ -1,5 +1,6 @@
 package com.nero.carupapi.dto;
 
+import com.nero.carupapi.model.Cliente;
 import jakarta.persistence.Id;
 
 import java.time.LocalDate;
@@ -12,6 +13,8 @@ public class ServicioWebDTO {
     private LocalDate fecha;
     private LocalTime hora;
     private String usuario;
+
+    private Cliente cliente;
     private String paisOrigen;
     private String ciudadOrigen;
     private String locOrigen;
@@ -40,6 +43,14 @@ public class ServicioWebDTO {
     private String celSolicitante;
     private String nombreMovil;
     private String nombrePrestador;
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
     public Long getIdSrv() {
         return idSrv;

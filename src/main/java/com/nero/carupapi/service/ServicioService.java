@@ -8,6 +8,7 @@ import com.nero.carupapi.utils.ServicioMobileDTOConverter;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -39,13 +40,13 @@ public class ServicioService {
 
     private final MarcaRepository marcaRepo;
 
-    private final MovilRepository movilRepo;
+    private final ChoferRepository chofRepo;
 
     private final PrestadorRepository prestadorRepo;
 
     private final ServicioMobileDTOConverter mobileDTOConverter;
 
-    public ServicioService(UsuariosMobileRepository usrMobileRepo, RestTemplateBuilder restTemplate, UsuarioRepository userRepo, ServicioRepository servRepo, PaisRepository paisRepo, CiudadRepository ciudadRepo, LocalidadRepository localidadRepo, ZonaRepository zonaRepo, ClienteService cliSrv, FallaRepository fallaRepo, VehiculoRepository vehiculoRepo, MarcaRepository marcaRepo, MovilRepository movilRepo, PrestadorRepository prestadorRepo, ServicioMobileDTOConverter mobileDTOConverter) {
+    public ServicioService(UsuariosMobileRepository usrMobileRepo, RestTemplateBuilder restTemplate, UsuarioRepository userRepo, ServicioRepository servRepo, PaisRepository paisRepo, CiudadRepository ciudadRepo, LocalidadRepository localidadRepo, ZonaRepository zonaRepo, ClienteService cliSrv, FallaRepository fallaRepo, VehiculoRepository vehiculoRepo, MarcaRepository marcaRepo, ChoferRepository chofRepo, PrestadorRepository prestadorRepo, ServicioMobileDTOConverter mobileDTOConverter) {
         this.usrMobileRepo = usrMobileRepo;
         this.restTemplate = restTemplate.build();
         this.userRepo = userRepo;
@@ -58,7 +59,7 @@ public class ServicioService {
         this.fallaRepo = fallaRepo;
         this.vehiculoRepo = vehiculoRepo;
         this.marcaRepo = marcaRepo;
-        this.movilRepo = movilRepo;
+        this.chofRepo = chofRepo;
         this.prestadorRepo = prestadorRepo;
         this.mobileDTOConverter = mobileDTOConverter;
     }
@@ -100,11 +101,11 @@ public class ServicioService {
     }
 
     public List<ServicioWebDTO> getAllWebDto() {
-        List<Servicio> turnos = servRepo.findAll();
+        List<Servicio> allServicios = servRepo.findAll();
 
         List<ServicioWebDTO> result = new ArrayList<>();
 
-        turnos.forEach(s -> {
+        allServicios.forEach(s -> {
             Optional<Usuario> usuario = userRepo.findById(s.getIdUsuario());
             Optional<Pais> paisOrigen = paisRepo.findById(s.getPaisOrigen());
             Optional<Localidad> locOrigen = localidadRepo.findById(s.getLocOrigen());
@@ -116,7 +117,7 @@ public class ServicioService {
             Optional<Falla> falla = fallaRepo.findById(Integer.valueOf(s.getIdFalla()));
             Optional<Vehiculo> vehiculo = vehiculoRepo.findById(s.getIdVehiculo() != null ? s.getIdVehiculo() : 0);
             Optional<Marca> marca = marcaRepo.findById(vehiculo.get().getIdMarca());
-            Optional<Movil> movil = s.getIdMovil() != null ? movilRepo.findById(s.getIdMovil()) : Optional.empty();
+            Optional<Chofer> chofer = s.getIdMovil() != null ? chofRepo.findById(s.getIdMovil()) : Optional.empty();
             Optional<Prestador> prestador = s.getIdPrestador() != null ? prestadorRepo.findById(s.getIdPrestador()) : Optional.empty();
 
             ServicioWebDTO nuevo = new ServicioWebDTO();
@@ -141,6 +142,7 @@ public class ServicioService {
             nuevo.setModelo(vehiculo.get().getModelo());
             nuevo.setColor(vehiculo.get().getColor());
             nuevo.setEstado(s.getEstado());
+            nuevo.setLlegadaLugar(s.getLlegadaLugar());
             nuevo.setSolicitante(s.getSolicitante());
             nuevo.setCelSolicitante(s.getCelSolicitante());
             nuevo.setIdMovil(s.getIdMovil());
@@ -149,13 +151,13 @@ public class ServicioService {
             ciudadDestino.ifPresent(ciudad -> nuevo.setCiudadDestino(ciudad.getNombre()));
             nuevo.setCalleDestino(s.getCalleDestino());
             nuevo.setObservaciones(s.getObservaciones());
-            movil.ifPresent(m -> nuevo.setNombreMovil(m.getNombre()));
+            chofer.ifPresent(m -> nuevo.setNombreMovil(m.getNombre()));
             prestador.ifPresent(p-> nuevo.setNombrePrestador(p.getNombre()));
             result.add(nuevo);
         });
         return result;
     }
-
+/*
     public Optional<Servicio> modificarEstado(Long IdServicio, String estado) {
         Optional<Servicio> srv = servRepo.findById(IdServicio);
         if (srv.isPresent()) {
@@ -164,21 +166,24 @@ public class ServicioService {
         }
         return srv;
     }
+    */
+    public void modificarEstado(Long idSrv, String estado) {
+       servRepo.cambiarEstado(idSrv, estado);
+    }
 
-    public Optional<Servicio> asignarServicio(Long IdServicio, Integer idMovil, Integer idPrestador) {
+    @Transactional
+    public Optional<Servicio> asignarServicio(Long IdServicio, Integer idChofer, Integer idPrestador){
         Optional<Servicio> srv = servRepo.findById(IdServicio);
         Optional<UsuariosMobile> u = Optional.empty();
         Short idTarea = 0;
         if (srv.isPresent()) {
-            srv.get().setEstado("A");
-            srv.get().setHoraAsignado(LocalTime.now());
-            idTarea = srv.get().getIdTarea();
+
             // si viene un movil de la empresa
-            if (idMovil != null) {
-                srv.get().setIdMovil(idMovil);
+            if (idChofer != null) {
+                srv.get().setIdMovil(idChofer);
                 srv.get().setIdPrestador(null);
                 //Busco el UsuarioMobile para poder obtener luego la playerId del dispositivo asociado
-                u = usrMobileRepo.findByIdChofer(idMovil);
+                u = usrMobileRepo.findByIdChofer(idChofer);
             }
             if (idPrestador != null) {
                 u = usrMobileRepo.findByIdPrestador(idPrestador);
@@ -186,14 +191,20 @@ public class ServicioService {
                 srv.get().setIdMovil(null);
             }
             if (u.isPresent()) {
+                idTarea = srv.get().getIdTarea();
                 String playerId = u.get().getPlayerId();
                 enviarNotificacion(IdServicio, idTarea, playerId);
             }
+            srv.get().setEstado("A");
+            srv.get().setHoraAsignado(LocalTime.now());
+
             servRepo.save(srv.get());
+
+
         }
         return srv;
     }
-
+    @Transactional
     public boolean desasignarServicio(Long IdServicio){
         Optional<Servicio> srv = servRepo.findById(IdServicio);
         if(srv.isPresent()){
@@ -207,7 +218,7 @@ public class ServicioService {
     }
 
     //Envío de notificación al dispositivo desde One Signal, identificado por la playerId obenida en la BD
-    private String enviarNotificacion(Long idServicio, Short IdTarea, String playerId) {
+    private void enviarNotificacion(Long idServicio, Short IdTarea, String playerId) {
         String apiUrl = "https://onesignal.com/api/v1/notifications";
         String requestBody = """
                 {
@@ -220,7 +231,7 @@ public class ServicioService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-        return restTemplate.postForObject(apiUrl, requestEntity, String.class);
+        restTemplate.postForObject(apiUrl, requestEntity, String.class);
     }
 
     public ServicioWebDTO getOneDTO(Long idSrv) {
@@ -261,6 +272,8 @@ public class ServicioService {
             nuevo.setModelo(vehiculo.get().getModelo());
             nuevo.setColor(vehiculo.get().getColor());
             nuevo.setEstado(s.getEstado());
+            nuevo.setLatitud(s.getLatitud());
+            nuevo.setLongitud(s.getLongitud());
             locDestino.ifPresent(localidad -> nuevo.setLocDestino(localidad.getNombre()));
             ciudadDestino.ifPresent(ciudad -> nuevo.setCiudadDestino(ciudad.getNombre()));
             nuevo.setCalleDestino(s.getCalleDestino());
@@ -271,19 +284,10 @@ public class ServicioService {
     }
 
     // Servicios asignados a un movil o prestador determinado
-    public List<ServicioMobileDTO> obtenerTodosPorIdMovil(Long idUsuario) {
+    public List<ServicioMobileDTO> obtenerPendientesPorIdMovil(Long idUsuario) {
         Optional<UsuariosMobile> usuario = usrMobileRepo.findById(idUsuario);
         List<Servicio> servicios = new ArrayList<>();
-/*
-        if(usuario.isPresent()){
-            if(usuario.get().getChofer() == null){
-                return servRepo.obtenerServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
-            }else{
-                return servRepo.obtenerServiciosPorMovil(usuario.get().getChofer().getIdChofer());
-            }
-        }
-        return null;
-        */
+
         if(usuario.isPresent()){
             if(usuario.get().getChofer() == null){
                 servicios =  servRepo.obtenerServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
@@ -295,10 +299,28 @@ public class ServicioService {
             servicios.forEach(s -> {
                 serviciosMobile.add(convertir(s));
             });
-
             return serviciosMobile;
         }
+        return null;
+    }
 
+    public List<ServicioMobileDTO> obtenerTodossPorIdMovil(Long idUsuario) {
+        Optional<UsuariosMobile> usuario = usrMobileRepo.findById(idUsuario);
+        List<Servicio> servicios = new ArrayList<>();
+
+        if(usuario.isPresent()){
+            if(usuario.get().getChofer() == null){
+                servicios =  servRepo.obtenerTodosServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
+            }else{
+                servicios = servRepo.obtenerTodosServiciosPorMovil(usuario.get().getChofer().getIdChofer());
+            }
+            List<ServicioMobileDTO> serviciosMobile = new ArrayList<>();
+
+            servicios.forEach(s -> {
+                serviciosMobile.add(convertir(s));
+            });
+            return serviciosMobile;
+        }
         return null;
     }
 
@@ -306,8 +328,68 @@ public class ServicioService {
         return servRepo.obtenerSrvPorTarea(idTarea,fecha);
     }
 
-
     public ServicioMobileDTO convertir(Servicio s){
         return mobileDTOConverter.convertServicioMobileDTO(s);
+    }
+
+
+
+    public List<ServicioWebDTO> getAllWebDtoBetwenDates(LocalDate fechaIni, LocalDate fechaFin) {
+        List<Servicio> allServicios = servRepo.obtenerTodosRangoFecha(fechaIni,fechaFin);
+
+        List<ServicioWebDTO> result = new ArrayList<>();
+
+        allServicios.forEach(s -> {
+            Optional<Usuario> usuario = userRepo.findById(s.getIdUsuario());
+            Optional<Pais> paisOrigen = paisRepo.findById(s.getPaisOrigen());
+            Optional<Localidad> locOrigen = localidadRepo.findById(s.getLocOrigen());
+            Optional<Localidad> locDestino = localidadRepo.findById(s.getLocDestino() != null ? s.getLocDestino() : 0);
+            Optional<Ciudad> ciudadOrigen = ciudadRepo.findById(s.getCiudadOrigen());
+            Optional<Ciudad> ciudadDestino = ciudadRepo.findById(s.getCiudadDestino() != null ? s.getCiudadDestino() : 0);
+            Optional<Zona> zona = zonaRepo.findById(Integer.valueOf(s.getZona()));
+            Optional<Cliente> cliente = cliSrv.obtenerCliente(s.getClienteId());
+            Optional<Falla> falla = fallaRepo.findById(Integer.valueOf(s.getIdFalla()));
+            Optional<Vehiculo> vehiculo = vehiculoRepo.findById(s.getIdVehiculo() != null ? s.getIdVehiculo() : 0);
+            Optional<Marca> marca = marcaRepo.findById(vehiculo.get().getIdMarca());
+            Optional<Chofer> chofer = s.getIdMovil() != null ? chofRepo.findById(s.getIdMovil()) : Optional.empty();
+            Optional<Prestador> prestador = s.getIdPrestador() != null ? prestadorRepo.findById(s.getIdPrestador()) : Optional.empty();
+
+            ServicioWebDTO nuevo = new ServicioWebDTO();
+            nuevo.setLatitud(s.getLatitud());
+            nuevo.setCliente(cliente.get());
+            nuevo.setLongitud(s.getLongitud());
+            nuevo.setIdSrv(s.getIdSrv());
+            nuevo.setIdTarea(s.getIdTarea());
+            nuevo.setFecha(s.getFecha());
+            nuevo.setHora(s.getHora());
+            nuevo.setUsuario(usuario.get().getNombre());
+            nuevo.setPaisOrigen(paisOrigen.get().getNombre());
+            nuevo.setLocOrigen(locOrigen.get().getNombre());
+            nuevo.setCiudadOrigen(ciudadOrigen.get().getNombre());
+            nuevo.setZona(zona.get().getNombre());
+            nuevo.setNombreCliente(cliente.get().getNombre());
+            nuevo.setCalleOrigen(s.getCalleOrigen());
+            nuevo.setNumPuertaOrigen(s.getNumPuertaOrigen());
+            nuevo.setEsquinaOrigen(s.getEsquinaOrigen());
+            nuevo.setFalla(falla.get().getNombre());
+            nuevo.setMatricula(vehiculo.get().getMatricula());
+            nuevo.setMarca(marca.get().getNombre());
+            nuevo.setModelo(vehiculo.get().getModelo());
+            nuevo.setColor(vehiculo.get().getColor());
+            nuevo.setEstado(s.getEstado());
+            nuevo.setLlegadaLugar(s.getLlegadaLugar());
+            nuevo.setSolicitante(s.getSolicitante());
+            nuevo.setCelSolicitante(s.getCelSolicitante());
+            nuevo.setIdMovil(s.getIdMovil());
+            nuevo.setIdPrestador(s.getIdPrestador());
+            locDestino.ifPresent(localidad -> nuevo.setLocDestino(localidad.getNombre()));
+            ciudadDestino.ifPresent(ciudad -> nuevo.setCiudadDestino(ciudad.getNombre()));
+            nuevo.setCalleDestino(s.getCalleDestino());
+            nuevo.setObservaciones(s.getObservaciones());
+            chofer.ifPresent(m -> nuevo.setNombreMovil(m.getNombre()));
+            prestador.ifPresent(p-> nuevo.setNombrePrestador(p.getNombre()));
+            result.add(nuevo);
+        });
+        return result;
     }
 }

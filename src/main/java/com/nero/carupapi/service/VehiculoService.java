@@ -41,6 +41,23 @@ public class VehiculoService {
         return vehRepo.save(existente);
     }
 
+    public VehiculoDTO obtenerVehiculoDTO(Long id) {
+        Optional<Vehiculo> res = vehRepo.findById(id);
+        VehiculoDTO nuevo = new VehiculoDTO();
+        if(res.isPresent()){
+            Optional<Marca> marca = marcaRepo.findById(res.get().getIdMarca());
+            nuevo.setIdVehiculo(res.get().getIdVehiculo());
+            nuevo.setMatricula(res.get().getMatricula());
+            nuevo.setIdMarca(res.get().getIdMarca());
+            nuevo.setNombreMarca(marca.get().getNombre());
+            nuevo.setModelo(res.get().getModelo());
+            nuevo.setColor(res.get().getColor());
+            nuevo.setAño(res.get().getAño());
+            nuevo.setIdCliente(res.get().getIdCliente());
+        }
+        return nuevo;
+    }
+
     public Optional<Vehiculo> obtenerVehiculo(Long id) {
         return vehRepo.findById(id);
     }
@@ -111,5 +128,16 @@ public class VehiculoService {
             });
         }
         return idsClientes;
+    }
+
+
+    public Vehiculo vehiculoPorMatriculayCliente(String matricula, Long idCliente){
+        List<Vehiculo> vehiculos = vehRepo.findByMatricula(matricula);
+        for (Vehiculo v : vehiculos) {
+            if (v.getIdCliente().equals(idCliente)) {
+                return v;
+            }
+        }
+        return null;
     }
 }

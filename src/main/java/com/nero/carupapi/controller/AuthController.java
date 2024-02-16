@@ -31,7 +31,7 @@ public class AuthController {
     @PostMapping("/api/authenticate")
     public ResponseEntity<?> postToken(@RequestBody JWTRequest request){
         this.authenticate(request);
-        System.out.println(request.getPlayerId());
+        //System.out.println(request.getPlayerId());
         final List<Object> resultado = this.customerUserDetails.cargarUsuario(request.getUsername(), request.getPlayerId());
        // final var userDetails = this.customerUserDetails.loadUserByUsername(request.getUsername());
         final var userDetails = (UserDetails) resultado.get(0);
@@ -40,10 +40,10 @@ public class AuthController {
         final var token = this.jwtService.generateToken(userDetails);
         if(resultado.get(1).getClass() == Usuario.class){
             Usuario usuario = (Usuario)resultado.get(1);
-            return ResponseEntity.ok(new JWTResponse(token, usuario.getNombre(), null));
+            return ResponseEntity.ok(new JWTResponse(token, usuario.getNombre(), null, usuario.getEmail(), usuario.getIdUsuario()));
         } else{
             UsuariosMobile usuario = (UsuariosMobile)resultado.get(1);
-            return ResponseEntity.ok(new JWTResponse(token, usuario.getNombre(),usuario.getIdUsuario()));
+            return ResponseEntity.ok(new JWTResponse(token, usuario.getNombre(),usuario.getIdUsuario(), null,null));
         }
 
     }

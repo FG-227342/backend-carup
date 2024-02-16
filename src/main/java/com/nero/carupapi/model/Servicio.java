@@ -1,10 +1,6 @@
 package com.nero.carupapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
-import java.sql.Date;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -272,34 +268,4 @@ public class Servicio {
         this.celSolicitante = celSolicitante;
     }
 
-    @Override
-    public String toString() {
-        return "Servicio{" +
-                "idSrv=" + idSrv +
-                ", idTarea=" + idTarea +
-                ", fecha=" + fecha +
-                ", hora=" + hora +
-                ", idUsuario=" + idUsuario +
-                ", paisOrigen=" + paisOrigen +
-                ", ciudadOrigen=" + ciudadOrigen +
-                ", locOrigen=" + locOrigen +
-                ", zona=" + zona +
-                ", clienteId=" + clienteId +
-                ", idVehiculo=" + idVehiculo +
-                ", idMovil=" + idMovil +
-                ", idPrestador=" + idPrestador +
-                ", latitud='" + latitud + '\'' +
-                ", longitud='" + longitud + '\'' +
-                ", calleOrigen='" + calleOrigen + '\'' +
-                ", numPuertaOrigen='" + numPuertaOrigen + '\'' +
-                ", esquinaOrigen='" + esquinaOrigen + '\'' +
-                ", idFalla=" + idFalla +
-                ", calleDestino='" + calleDestino + '\'' +
-                ", ciudadDestino=" + ciudadDestino +
-                ", locDestino=" + locDestino +
-                ", observaciones='" + observaciones + '\'' +
-                ", estado='" + estado + '\'' +
-                ", llegadaLugar=" + llegadaLugar +
-                '}';
-    }
 }
