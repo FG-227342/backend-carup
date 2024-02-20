@@ -6,6 +6,7 @@ import com.nero.carupapi.model.Servicio;
 import com.nero.carupapi.service.ServicioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -105,6 +106,7 @@ public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBod
     }
 }
 
+    @Transactional
     @PatchMapping("/asignarMovil/{id}")
     public ResponseEntity<Servicio> asignar(@PathVariable Long id, @RequestBody Map<String, Integer> data){
         Optional<Servicio> buscado;
@@ -117,6 +119,7 @@ public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBod
         return buscado.map(servicio -> new ResponseEntity<>(servicio, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @Transactional
     @PatchMapping("/desasignar/{SrvId}")
     public ResponseEntity<String> desasignarServicio(@PathVariable Long SrvId){
         boolean res = srvService.desasignarServicio(SrvId);

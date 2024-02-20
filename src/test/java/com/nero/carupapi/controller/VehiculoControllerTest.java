@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -35,6 +36,10 @@ public class VehiculoControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private VehiculoRepository vehRepo;
+
+    @MockBean
+    JdbcTemplate jb;
+
     @MockBean
     private VehiculoService vehService;
     @Autowired

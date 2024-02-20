@@ -1,12 +1,9 @@
 package com.nero.carupapi.controller;
 
-import com.nero.carupapi.model.Chofer;
 import com.nero.carupapi.model.UsuariosMobile;
 import com.nero.carupapi.repository.UsuariosMobileRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,9 +12,11 @@ import java.util.List;
 public class UsuarioMobileController {
 
     private final UsuariosMobileRepository usrRepo;
+    private final PasswordEncoder pe;
 
-    public UsuarioMobileController(UsuariosMobileRepository usrRepo) {
+    public UsuarioMobileController(UsuariosMobileRepository usrRepo, PasswordEncoder pe) {
         this.usrRepo = usrRepo;
+        this.pe = pe;
     }
 
     @GetMapping
@@ -36,5 +35,10 @@ public class UsuarioMobileController {
         return usrRepo.findByIdPrestador(id).orElse(null);
     }
 
-
+    @PostMapping(produces="application/json")
+    public UsuariosMobile crearUserMobile(@RequestBody UsuariosMobile usuarioM) {
+        String psw = pe.encode(usuarioM.getClave());
+        usuarioM.setClave(psw);
+        return usrRepo.save(usuarioM);
+    }
 }
