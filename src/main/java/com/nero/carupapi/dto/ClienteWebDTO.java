@@ -6,7 +6,6 @@ public class ClienteWebDTO {
     private Long idCliente;
     private String nombre;
     private String documento;
-
     private String nombreTipoCliente;
     private String nombreConvenio;
     private String nombreAfiliacion;
@@ -16,6 +15,16 @@ public class ClienteWebDTO {
     private LocalDate fechaAlta;
     private boolean alta;
     private String notas;
+
+    private String email;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public Long getIdCliente() {
         return idCliente;

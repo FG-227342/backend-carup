@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +77,39 @@ public class ClienteService {
         return cRepo.findByDocumentoAndIdTipoCliente(documento,1);
     }
 
+    public List<ClienteWebDTO> buscarPorTextoDTO(String texto){
+        List<Cliente> clientes = cRepo.buscarPorTextoSinPaginar(texto);
+
+        List<ClienteWebDTO> result = new ArrayList<>();
+
+        clientes.forEach( c -> {
+            Optional<TipoCliente> tipoCliente = tipoCliRepo.findById(c.getIdTipoCliente());
+            Optional<Convenio> convenio = convRepo.findById(c.getIdConvenio() != null ? c.getIdConvenio():0);
+            Optional<Afiliacion> afiliacion = afiliaRepo.findById(c.getIdAfiliacion() != null ? c.getIdAfiliacion():0);
+
+            ClienteWebDTO nuevo = new ClienteWebDTO();
+            nuevo.setIdCliente(c.getIdCliente());
+            nuevo.setNombre(c.getNombre());
+            nuevo.setDocumento(c.getDocumento());
+            nuevo.setTelefono(c.getTelefono());
+            nuevo.setCelular(c.getCelular());
+            nuevo.setDireccion(c.getDireccion());
+            nuevo.setFechaAlta(c.getFechaAlta());
+            nuevo.setAlta(c.isAlta());
+            nuevo.setNotas(c.getNotas());
+            nuevo.setNombreTipoCliente(tipoCliente.get().getNombre());
+            if(convenio.isPresent()){
+                nuevo.setNombreConvenio(convenio.get().getNombre());
+            }
+            if(afiliacion.isPresent()){
+                nuevo.setNombreAfiliacion(afiliacion.get().getNombre());
+            }
+            nuevo.setEmail(c.getEmail());
+            result.add(nuevo);
+        });
+        return result;
+    }
+
     public List<ClienteWebDTO> buscarTodosDTO(){
         List<Cliente> clientes = cRepo.findAll();
 
@@ -103,6 +137,7 @@ public class ClienteService {
             if(afiliacion.isPresent()){
             nuevo.setNombreAfiliacion(afiliacion.get().getNombre());
             }
+            nuevo.setEmail(c.getEmail());
             result.add(nuevo);
         });
         return result;
@@ -145,6 +180,7 @@ public class ClienteService {
                     result.setDireccion(cli.get().getDireccion());
                     result.setNotas(cli.get().getNotas());
                     result.setDocumento(cli.get().getDocumento());
+                    result.setEmail(cli.get().getEmail());
                     List<VehiculoDTO> vehiculos = vehService.todosPorIdCLiente(cli.get().getIdCliente());
                     result.setVehiculos(vehiculos);
                     return result;
@@ -170,6 +206,7 @@ public class ClienteService {
          result.setDireccion(cli.getDireccion());
          result.setNotas(cli.getNotas());
          result.setDocumento(cli.getDocumento());
+         result.setEmail(cli.getEmail());
          List<VehiculoDTO> vehiculos = vehService.todosPorIdCLiente(cli.getIdCliente());
          result.setVehiculos(vehiculos);
          return result;

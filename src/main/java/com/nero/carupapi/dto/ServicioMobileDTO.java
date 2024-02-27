@@ -24,6 +24,8 @@ public class ServicioMobileDTO {
     private String estado;
     private LocalTime horaAsignado;
 
+    private Byte llegadaLugar;
+
     public Long getIdSrv() {
         return idSrv;
     }
@@ -166,6 +168,13 @@ public class ServicioMobileDTO {
         this.horaAsignado = horaAsignado;
     }
 
+    public Byte getLlegadaLugar() {
+        return llegadaLugar;
+    }
+
+    public void setLlegadaLugar(Byte llegadaLugar) {
+        this.llegadaLugar = llegadaLugar;
+    }
 
     @Override
     public String toString() {

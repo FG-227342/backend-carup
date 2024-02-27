@@ -16,6 +16,8 @@ public class ClienteVehiculosDTO {
     private boolean alta;
     private String notas;
 
+    private String email;
+
     private List<VehiculoDTO> vehiculos;
 
     public List<VehiculoDTO> getVehiculos() {
@@ -127,5 +129,13 @@ public class ClienteVehiculosDTO {
 
     public void setNotas(String notas) {
         this.notas = notas;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

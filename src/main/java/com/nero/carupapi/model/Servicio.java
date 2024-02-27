@@ -1,6 +1,7 @@
 package com.nero.carupapi.model;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -39,9 +40,11 @@ public class Servicio {
     private LocalTime horaAsignado;
 
     public Servicio() {
+
         this.fecha = LocalDate.now();
         this.hora = LocalTime.now();
         this.estado = "P";
+        this.llegadaLugar = 0;
     }
 
     public Long getIdSrv() {

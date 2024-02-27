@@ -152,27 +152,28 @@ public class ServicioService {
             nuevo.setCalleDestino(s.getCalleDestino());
             nuevo.setObservaciones(s.getObservaciones());
             chofer.ifPresent(m -> nuevo.setNombreMovil(m.getNombre()));
-            prestador.ifPresent(p-> nuevo.setNombrePrestador(p.getNombre()));
+            prestador.ifPresent(p -> nuevo.setNombrePrestador(p.getNombre()));
             result.add(nuevo);
         });
         return result;
     }
-/*
-    public Optional<Servicio> modificarEstado(Long IdServicio, String estado) {
-        Optional<Servicio> srv = servRepo.findById(IdServicio);
-        if (srv.isPresent()) {
-            srv.get().setEstado(estado.toUpperCase());
-            servRepo.save(srv.get());
+
+    /*
+        public Optional<Servicio> modificarEstado(Long IdServicio, String estado) {
+            Optional<Servicio> srv = servRepo.findById(IdServicio);
+            if (srv.isPresent()) {
+                srv.get().setEstado(estado.toUpperCase());
+                servRepo.save(srv.get());
+            }
+            return srv;
         }
-        return srv;
-    }
-    */
+        */
     public void modificarEstado(Long idSrv, String estado) {
-       servRepo.cambiarEstado(idSrv, estado);
+        servRepo.cambiarEstado(idSrv, estado);
     }
 
     @Transactional
-    public Optional<Servicio> asignarServicio(Long IdServicio, Integer idChofer, Integer idPrestador){
+    public Optional<Servicio> asignarServicio(Long IdServicio, Integer idChofer, Integer idPrestador) {
         Optional<Servicio> srv = servRepo.findById(IdServicio);
         Optional<UsuariosMobile> u = Optional.empty();
         Short idTarea = 0;
@@ -204,10 +205,11 @@ public class ServicioService {
         }
         return srv;
     }
+
     @Transactional
-    public boolean desasignarServicio(Long IdServicio){
+    public boolean desasignarServicio(Long IdServicio) {
         Optional<Servicio> srv = servRepo.findById(IdServicio);
-        if(srv.isPresent()){
+        if (srv.isPresent()) {
             srv.get().setEstado("P");
             srv.get().setIdMovil(null);
             srv.get().setIdPrestador(null);
@@ -237,7 +239,7 @@ public class ServicioService {
     public ServicioWebDTO getOneDTO(Long idSrv) {
         Optional<Servicio> opt = servRepo.findById(idSrv);
 
-        if(opt.isPresent()) {
+        if (opt.isPresent()) {
             Servicio s = opt.get();
 
             Optional<Usuario> usuario = userRepo.findById(s.getIdUsuario());
@@ -274,10 +276,12 @@ public class ServicioService {
             nuevo.setEstado(s.getEstado());
             nuevo.setLatitud(s.getLatitud());
             nuevo.setLongitud(s.getLongitud());
+            nuevo.setLlegadaLugar(s.getLlegadaLugar());
             locDestino.ifPresent(localidad -> nuevo.setLocDestino(localidad.getNombre()));
             ciudadDestino.ifPresent(ciudad -> nuevo.setCiudadDestino(ciudad.getNombre()));
             nuevo.setCalleDestino(s.getCalleDestino());
             nuevo.setObservaciones(s.getObservaciones());
+            nuevo.setCelSolicitante(s.getCelSolicitante());
             return nuevo;
         }
         return null;
@@ -288,10 +292,10 @@ public class ServicioService {
         Optional<UsuariosMobile> usuario = usrMobileRepo.findById(idUsuario);
         List<Servicio> servicios = new ArrayList<>();
 
-        if(usuario.isPresent()){
-            if(usuario.get().getChofer() == null){
-                servicios =  servRepo.obtenerServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
-            }else{
+        if (usuario.isPresent()) {
+            if (usuario.get().getChofer() == null) {
+                servicios = servRepo.obtenerServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
+            } else {
                 servicios = servRepo.obtenerServiciosPorMovil(usuario.get().getChofer().getIdChofer());
             }
             List<ServicioMobileDTO> serviciosMobile = new ArrayList<>();
@@ -308,10 +312,10 @@ public class ServicioService {
         Optional<UsuariosMobile> usuario = usrMobileRepo.findById(idUsuario);
         List<Servicio> servicios = new ArrayList<>();
 
-        if(usuario.isPresent()){
-            if(usuario.get().getChofer() == null){
-                servicios =  servRepo.obtenerTodosServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
-            }else{
+        if (usuario.isPresent()) {
+            if (usuario.get().getChofer() == null) {
+                servicios = servRepo.obtenerTodosServiciosPorPrestador(usuario.get().getPrestador().getIdPrestador());
+            } else {
                 servicios = servRepo.obtenerTodosServiciosPorMovil(usuario.get().getChofer().getIdChofer());
             }
             List<ServicioMobileDTO> serviciosMobile = new ArrayList<>();
@@ -325,17 +329,16 @@ public class ServicioService {
     }
 
     public Servicio buscarSrvPorTarea(Short idTarea, LocalDate fecha) {
-        return servRepo.obtenerSrvPorTarea(idTarea,fecha);
+        return servRepo.obtenerSrvPorTarea(idTarea, fecha);
     }
 
-    public ServicioMobileDTO convertir(Servicio s){
+    public ServicioMobileDTO convertir(Servicio s) {
         return mobileDTOConverter.convertServicioMobileDTO(s);
     }
 
 
-
     public List<ServicioWebDTO> getAllWebDtoBetwenDates(LocalDate fechaIni, LocalDate fechaFin) {
-        List<Servicio> allServicios = servRepo.obtenerTodosRangoFecha(fechaIni,fechaFin);
+        List<Servicio> allServicios = servRepo.obtenerTodosRangoFecha(fechaIni, fechaFin);
 
         List<ServicioWebDTO> result = new ArrayList<>();
 
@@ -387,9 +390,17 @@ public class ServicioService {
             nuevo.setCalleDestino(s.getCalleDestino());
             nuevo.setObservaciones(s.getObservaciones());
             chofer.ifPresent(m -> nuevo.setNombreMovil(m.getNombre()));
-            prestador.ifPresent(p-> nuevo.setNombrePrestador(p.getNombre()));
+            prestador.ifPresent(p -> nuevo.setNombrePrestador(p.getNombre()));
             result.add(nuevo);
         });
         return result;
+    }
+
+    @Transactional
+    public void llegadaAlLugar(Long idServicio) {
+        Servicio s = servRepo.findById(idServicio)
+                .orElseThrow(() -> new RuntimeException("Servicio no encontrado con ID: " + idServicio));
+        s.setLlegadaLugar((byte) 1);
+        servRepo.save(s);
     }
 }

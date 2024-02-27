@@ -76,6 +76,11 @@ public class ClienteController {
         return cliService.buscarPorTexto(nombre,20);
     }
 
+    @GetMapping("/porNombreDTO/{nombre}")
+    public List<ClienteWebDTO> getCliPorNombreDTO(@PathVariable String nombre) {
+        return cliService.buscarPorTextoDTO(nombre);
+    }
+
     @GetMapping("/buscarDirecto/{documento}")
     public ResponseEntity<Cliente> buscarDirecto(@PathVariable String documento) {
         Cliente res = cliService.buscarDirecto(documento);

@@ -18,4 +18,7 @@ public interface ClienteRepository extends JpaRepository<Cliente,Long> {
 
     Cliente findByDocumentoAndIdTipoCliente(String documento, int tipoCliente);
 
+    @Query("SELECT e FROM Cliente e WHERE e.nombre like %:texto%")
+    List<Cliente> buscarPorTextoSinPaginar(@Param("texto") String texto);
+
 }

@@ -32,6 +32,8 @@ public class Cliente {
     private boolean alta;
     private String notas;
 
+    private String email;
+
     public Cliente() {
         this.alta = true;
     }
@@ -146,5 +148,13 @@ public class Cliente {
 
     public void setNotas(String notas) {
         this.notas = notas;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

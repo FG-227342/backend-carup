@@ -62,6 +62,8 @@ public class VehiculoController {
             String sqlState = extraerSQLState(e);
             //System.out.println(sqlState);
             if ("23000".equals(sqlState)) {
+                // esto me devolvera un vehículo, solo si lo estoy creando para un cliente particular, si no retornara body vacío, ej: desde el alta de servicio, tengo cliente seteado, y doy de alta un vehículo para ese cliente
+                // si sucede clave foreanea duplicada, será para vehículos de ese cliente
                 return new ResponseEntity<>(v,HttpStatus.OK);
             }
             return new ResponseEntity<>(v,HttpStatus.INTERNAL_SERVER_ERROR);

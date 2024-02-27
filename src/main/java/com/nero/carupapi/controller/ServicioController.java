@@ -83,18 +83,6 @@ public class ServicioController {
         return ResponseEntity.ok(s);
     }
 
-/*
-    @PatchMapping("/{id}")
-    public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> estado) {
-        Optional<Servicio> buscado;
-
-        if (estado.containsKey("estado")) {
-            buscado = srvService.modificarEstado(id, estado.get("estado"));
-        } else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return buscado.map(servicio -> new ResponseEntity<>(servicio, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }*/
 @PatchMapping("/{id}")
 public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBody Map<String, String> estado) {
 
@@ -105,7 +93,6 @@ public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBod
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
-
     @Transactional
     @PatchMapping("/asignarMovil/{id}")
     public ResponseEntity<Servicio> asignar(@PathVariable Long id, @RequestBody Map<String, Integer> data){
@@ -180,4 +167,8 @@ public ResponseEntity<Servicio> cambiarEstado(@PathVariable Long id, @RequestBod
         }
     }
 
+    @PatchMapping("/llegadaLugar/{SrvId}")
+    public void llegadaAlLugar(@PathVariable Long SrvId){
+        srvService.llegadaAlLugar(SrvId);
+    }
 }
